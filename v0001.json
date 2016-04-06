@@ -10,6 +10,7 @@
       "email" : "iotf@uk.ibm.com"
     }
   },
+  "host": "r73oj6.staging.internetofthings.ibmcloud.com",
   "schemes" : [ "https" ],
   "basePath" : "/api/v0001",
   "produces" : [ "application/json" ],
