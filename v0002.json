@@ -1,0 +1,3809 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "IBM IoT Foundation API",
+    "description" : "<p>API for the IBM Internet of Things Foundation</p>\n<p>This is the current version of the Internet of Things Foundation API.</p>\n<p>After registering for your own organization you will be provided with a 6 character\norganization ID.  This ID is required in the hostname for any API calls, the base \nURL for your organization can be accessed at the following address: \nhttps://<b>orgId</b>.internetofthings.ibmcloud.com/api/v0002/</p>\n<p>The API is protected with HTTP Basic auth.  When you generate an API key \nyou will be presented with a key and an authentication token.\nTo authenticate all requests to the API set the username to the API \nkey, and the password to the authentication token.</p>\n",
+    "version" : "0002",
+    "contact" : {
+      "name" : "IBM IoT Foundation Team",
+      "url" : "https://internetofthings.ibmcloud.com",
+      "email" : "iotf@uk.ibm.com"
+    }
+  },
+  "schemes" : [ "https" ],
+  "basePath" : "/api/v0002",
+  "produces" : [ "application/json" ],
+  "responses" : {
+    "UnexpectedError" : {
+      "description" : "Unexpected error",
+      "schema" : {
+        "$ref" : "#/definitions/ErrorMessage"
+      },
+      "examples" : {
+        "application/json" : {
+          "message" : "CUDRS0001E: An internal server error occurred while processing your request.",
+          "exception" : [ {
+            "id" : "CUDRS0001E"
+          }, {
+            "properties" : [ ]
+          } ]
+        }
+      }
+    },
+    "StatusUnexpectedError" : {
+      "description" : "Unexpected error",
+      "schema" : {
+        "$ref" : "#/definitions/ErrorMessage"
+      },
+      "examples" : {
+        "application/json" : {
+          "message" : "CUDST0001E: An internal server error occurred while processing your request.",
+          "exception" : [ {
+            "id" : "CUDST0001E"
+          }, {
+            "properties" : [ ]
+          } ]
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "ApiKey" : {
+      "type" : "basic",
+      "description" : "Requires a valid API key and authentication token"
+    }
+  },
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Organization Configuration" ],
+        "summary" : "Get organization details",
+        "description" : "Get details about an organization.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Organization details",
+            "schema" : {
+              "$ref" : "#/definitions/Organization"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "ab8de4",
+                "name" : "My organization",
+                "enabled" : true,
+                "type" : "Bluemix Free",
+                "bluemix" : {
+                  "region" : "us-south",
+                  "organizationGuid" : "025273cb-d3c5-4204-9fef-ad5f84c2af02",
+                  "serviceInstanceGuid" : "90d13f02-152c-4cd7-b23e-aaae87b2f338",
+                  "spaceGuid" : "6d0535f9-9f15-48f3-8b67-43f59a3a5c65",
+                  "planId" : "iotf-service-bronze-id"
+                },
+                "config" : {
+                  "historian" : {
+                    "enabled" : true,
+                    "retention" : 1
+                  }
+                },
+                "created" : "2015-04-08T11:23:23+00:00",
+                "updated" : "2015-04-08T11:23:23+00:00"
+              }
+            }
+          },
+          "404" : {
+            "description" : "The organization does not exist"
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the api key used does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/bulk/devices" : {
+      "get" : {
+        "tags" : [ "Bulk Operations" ],
+        "summary" : "List devices",
+        "description" : "<p>Sorting can be performed on any of the following properties (sort order can be reversed by prefixing the property name with '-'):</p> <ul><li>typeId</li><li>deviceId</li><li>deviceInfo.description</li><li>deviceInfo.descriptiveLocation</li><li>deviceInfo.serialNumber</li><li>deviceInfo.deviceClass</li><li>deviceInfo.fwVersion</li><li>deviceInfo.hwVersion</li><li>deviceInfo.manufacturer</li><li>deviceInfo.model</li><li>mgmt.dormant</li><li>mgmt.supports.deviceActions</li><li>mgmt.supports.firmwareActions</li><li>status.alert.enabled</li><li>status.alert.timestamp</li></ul><p>The following facets are supported:</p><ul><li>typeId</li><li>deviceInfo.deviceClass</li><li>deviceInfo.fwVersion</li><li>deviceInfo.hwVersion</li><li>deviceInfo.manufacturer</li><li>deviceInfo.model</li><li>mgmt.dormant</li><li>mgmt.supports.deviceActions</li><li>mgmt.supports.firmwareActions</li><li>status.alert.enabled</li></ul>",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/_bookmark"
+        }, {
+          "$ref" : "#/parameters/_limit"
+        }, {
+          "$ref" : "#/parameters/_sort"
+        }, {
+          "$ref" : "#/parameters/_facets"
+        }, {
+          "$ref" : "#/parameters/typeIdSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceIdSearchParameter"
+        }, {
+          "$ref" : "#/parameters/statusAlertSearchParameter"
+        }, {
+          "$ref" : "#/parameters/mgmtDormantSearchParameter"
+        }, {
+          "$ref" : "#/parameters/mgmtSupportsDeviceActionsSearchParameter"
+        }, {
+          "$ref" : "#/parameters/mgmtSupportsFirmwareActionsSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDescriptionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDescriptiveLocationSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDeviceClassSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoFwVersionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoHwVersionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoManufacturerSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoModelSearchParameter"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of devices",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceListResponse"
+            },
+            "examples" : {
+              "application/json" : {
+                "bookmark" : "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "meta" : {
+                  "facets" : {
+                    "status.alert.enabled" : {
+                      "false" : 2
+                    },
+                    "deviceInfo.model" : {
+                      "7865" : 1,
+                      "8000" : 1
+                    }
+                  },
+                  "total_rows" : 2
+                },
+                "results" : [ {
+                  "id" : "d:abc123:myType:myDevice",
+                  "typeId" : "myType",
+                  "deviceId" : "myDevice",
+                  "deviceInfo" : {
+                    "serialNumber" : "100087",
+                    "manufacturer" : "ACME Co.",
+                    "model" : "7865",
+                    "deviceClass" : "A",
+                    "description" : "My shiny device",
+                    "fwVersion" : "1.0.0",
+                    "hwVersion" : "1.0",
+                    "descriptiveLocation" : "Office 5, D Block"
+                  },
+                  "metadata" : {
+                    "customField1" : "customValue1",
+                    "customField2" : "customValue2"
+                  },
+                  "registration" : {
+                    "auth" : {
+                      "id" : "ibmer@uk.ibm.com",
+                      "type" : "person"
+                    },
+                    "date" : "2015-04-08T11:23:23+00:00"
+                  },
+                  "status" : {
+                    "alert" : {
+                      "enabled" : false,
+                      "timestamp" : "2015-04-08T11:23:24+00:00"
+                    }
+                  },
+                  "refs" : {
+                    "location" : "/device/types/myType/devices/myDevice/location",
+                    "mgmt" : "/device/types/myType/devices/myDevice/mgmt",
+                    "diag" : {
+                      "logs" : "/device/types/myType/devices/myDevice/diag/logs",
+                      "errorCodes" : "/device/types/myType/devices/myDevice/diag/errorCodes"
+                    }
+                  }
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The organization or device type does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/bulk/devices/add" : {
+      "post" : {
+        "tags" : [ "Bulk Operations" ],
+        "summary" : "Register multiple new devices",
+        "description" : "Register multiple new devices, each request can contain a maximum of 512KB.  The response body will contain the generated authentication tokens for all devices. You must make sure to record these tokens when processing the response. We are not able to retrieve lost authentication tokens.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Devices",
+          "in" : "body",
+          "description" : "Devices to be registered",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceBulkRegistrationRequestList"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "All devices registered successfully",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceWithPasswordList"
+            }
+          },
+          "202" : {
+            "description" : "Some devices registered successfully",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceWithPasswordList"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request (No body, invalid JSON, unexpected key, bad value)",
+            "schema" : {
+              "$ref" : "#/definitions/InvalidRequestMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0007E: The request was not valid. Review the constraint violations provided.",
+                "exception" : {
+                  "id" : "CUDRS0007E",
+                  "properties" : [ ]
+                },
+                "violations" : [ {
+                  "message" : "CUDRS0009E: The id field is missing. A value must be specified.",
+                  "exception" : {
+                    "id" : "CUDRS0009E",
+                    "properties" : [ "id" ]
+                  }
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Maximum number of devices exceeded",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0018E: The device could not be added to the organization ab8de4 as the maximum number of devices has been reached.",
+                "exception" : [ {
+                  "id" : "CUDRS0018E"
+                }, {
+                  "properties" : [ "ab8de4" ]
+                } ]
+              }
+            }
+          },
+          "413" : {
+            "description" : "Request content exceeds 512Kb",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0021E: The request could not be processed as the content was too large.",
+                "exception" : [ {
+                  "id" : "CUDRS0021E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "415" : {
+            "description" : "Unsupported Media Type. A Content-Type header with value 'application/json' must be provided."
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/bulk/devices/remove" : {
+      "post" : {
+        "tags" : [ "Bulk Operations" ],
+        "summary" : "Delete multiple devices",
+        "description" : "Delete multiple devices, each request can contain a maximum of 512Kb.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Devices",
+          "in" : "body",
+          "description" : "Devices to be deleted",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceBulkDeletionRequestList"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "All devices deleted successfully",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceBulkDeletionResponseList"
+            }
+          },
+          "202" : {
+            "description" : "Some devices deleted successfully",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceBulkDeletionResponseList"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request (No body, invalid JSON, unexpected key, bad value)",
+            "schema" : {
+              "$ref" : "#/definitions/InvalidRequestMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0007E: The request was not valid. Review the constraint violations provided.",
+                "exception" : {
+                  "id" : "CUDRS0007E",
+                  "properties" : [ ]
+                },
+                "violations" : [ {
+                  "message" : "CUDRS0009E: The id field is missing. A value must be specified.",
+                  "exception" : {
+                    "id" : "CUDRS0009E",
+                    "properties" : [ "id" ]
+                  }
+                } ]
+              }
+            }
+          },
+          "413" : {
+            "description" : "Request content exceeds 512KB",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0021E: The request could not be processed as the content was too large.",
+                "exception" : [ {
+                  "id" : "CUDRS0021E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types" : {
+      "get" : {
+        "tags" : [ "Device Types" ],
+        "summary" : "List device types",
+        "description" : "<p> Sorting can be performed on any of the following properties (sort order can be reversed by prefixing the property name with '-'):</p> <ul><li>id</li><li>description</li><li>deviceInfo.description</li><li>deviceInfo.descriptiveLocation</li><li>deviceInfo.serialNumber</li><li>deviceInfo.deviceClass</li><li>deviceInfo.fwVersion</li><li>deviceInfo.hwVersion</li><li>deviceInfo.manufacturer</li><li>deviceInfo.model</li></ul><p>The following facets are supported:</p><ul><li>deviceInfo.deviceClass</li><li>deviceInfo.fwVersion</li><li>deviceInfo.hwVersion</li><li>deviceInfo.manufacturer</li><li>deviceInfo.model</li></ul>",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/_bookmark"
+        }, {
+          "$ref" : "#/parameters/_limit"
+        }, {
+          "$ref" : "#/parameters/_sort"
+        }, {
+          "$ref" : "#/parameters/_facets"
+        }, {
+          "name" : "id",
+          "in" : "query",
+          "description" : "Optional filter of results by ID",
+          "type" : "string"
+        }, {
+          "name" : "description",
+          "in" : "query",
+          "description" : "Optional filter of results by description",
+          "type" : "string"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDescriptionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDescriptiveLocationSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDeviceClassSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoFwVersionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoHwVersionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoManufacturerSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoModelSearchParameter"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device types",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceTypeListResponse"
+            },
+            "examples" : {
+              "application/json" : {
+                "bookmark" : "aaaaaaaaaaaaaaaaaaaaaaa",
+                "metadata" : {
+                  "id" : {
+                    "myDeviceType" : 1,
+                    "myOtherDeviceType" : 2
+                  },
+                  "total_rows" : 2
+                },
+                "results" : [ {
+                  "id" : "myDeviceType",
+                  "description" : "My first device type",
+                  "deviceInfo" : {
+                    "serialNumber" : "100087",
+                    "manufacturer" : "ACME Co.",
+                    "model" : "7865",
+                    "deviceClass" : "A",
+                    "description" : "My shiny device",
+                    "fwVersion" : "1.0.0",
+                    "hwVersion" : "1.0",
+                    "descriptiveLocation" : "Office 5, D Block"
+                  },
+                  "metadata" : {
+                    "customField1" : "customValue1",
+                    "customField2" : "customValue2"
+                  }
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Device Types" ],
+        "summary" : "Create device type",
+        "description" : "Creates a device type for a normal device or a gateway. Gateways are specialization of devices but have the additional permission to register new devices and act on behalf of a device that is assigned to the gateway.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "Device Type",
+          "in" : "body",
+          "description" : "Device type to be created",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceTypeCreationRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Device type created",
+            "headers" : {
+              "Location" : {
+                "type" : "string",
+                "description" : "Location (resource URI) for the device type"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DeviceType"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "myDeviceType",
+                "description" : "My first device type",
+                "classId" : "Device",
+                "deviceInfo" : {
+                  "serialNumber" : "100087",
+                  "manufacturer" : "ACME Co.",
+                  "model" : "7865",
+                  "deviceClass" : "A",
+                  "description" : "My shiny device",
+                  "fwVersion" : "1.0.0",
+                  "hwVersion" : "1.0",
+                  "descriptiveLocation" : "Office 5, D Block"
+                },
+                "metadata" : {
+                  "customField1" : "customValue1",
+                  "customField2" : "customValue2"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request (No body, invalid JSON, unexpected key, bad value)",
+            "schema" : {
+              "$ref" : "#/definitions/InvalidRequestMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0007E: The request was not valid. Review the constraint violations provided.",
+                "exception" : {
+                  "id" : "CUDRS0007E",
+                  "properties" : [ ]
+                },
+                "violations" : [ {
+                  "message" : "CUDRS0009E: The id field is missing. A value must be specified.",
+                  "exception" : {
+                    "id" : "CUDRS0009E",
+                    "properties" : [ "id" ]
+                  }
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "409" : {
+            "description" : "The device type already exists",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}" : {
+      "get" : {
+        "tags" : [ "Device Types" ],
+        "summary" : "Get device type",
+        "description" : "Gets device type details.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device type",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceType"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "myDeviceType",
+                "description" : "My first device type",
+                "deviceInfo" : {
+                  "serialNumber" : "100087",
+                  "manufacturer" : "ACME Co.",
+                  "model" : "7865",
+                  "deviceClass" : "A",
+                  "description" : "My shiny device",
+                  "fwVersion" : "1.0.0",
+                  "hwVersion" : "1.0",
+                  "descriptiveLocation" : "Office 5, D Block"
+                },
+                "metadata" : {
+                  "customField1" : "customValue1",
+                  "customField2" : "customValue2"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The device type does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Device Types" ],
+        "summary" : "Update device type",
+        "description" : "Updates a device type.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "name" : "deviceTypeUpdate",
+          "in" : "body",
+          "description" : "Device type update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceTypeUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device type",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceType"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "myDeviceType",
+                "description" : "My first device type",
+                "deviceInfo" : {
+                  "serialNumber" : "100087",
+                  "manufacturer" : "ACME Co.",
+                  "model" : "7865",
+                  "deviceClass" : "A",
+                  "description" : "My shiny device",
+                  "fwVersion" : "1.0.0",
+                  "hwVersion" : "1.0",
+                  "descriptiveLocation" : "Office 5, D Block"
+                },
+                "metadata" : {
+                  "customField1" : "customValue1",
+                  "customField2" : "customValue2"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The device type does not exist"
+          },
+          "409" : {
+            "description" : "The update could not be completed due to a conflict",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Device Types" ],
+        "summary" : "Delete device type",
+        "description" : "Deletes a device type.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Device type was successfully deleted"
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices" : {
+      "get" : {
+        "tags" : [ "Devices" ],
+        "summary" : "List devices",
+        "description" : "<p> Sorting can be performed on any of the following properties (sort order can be reversed by prefixing the property name with '-'):</p> <ul><li>typeId</li><li>deviceId</li><li>deviceInfo.description</li><li>deviceInfo.descriptiveLocation</li><li>deviceInfo.serialNumber</li><li>deviceInfo.deviceClass</li><li>deviceInfo.fwVersion</li><li>deviceInfo.hwVersion</li><li>deviceInfo.manufacturer</li><li>deviceInfo.model</li><li>mgmt.dormant</li><li>mgmt.supports.deviceActions</li><li>mgmt.supports.firmwareActions</li><li>status.alert.enabled</li><li>status.alert.timestamp</li></ul><p>The following facets are supported:</p><ul><li>typeId</li><li>deviceInfo.deviceClass</li><li>deviceInfo.fwVersion</li><li>deviceInfo.hwVersion</li><li>deviceInfo.manufacturer</li><li>deviceInfo.model</li><li>mgmt.dormant</li><li>mgmt.supports.deviceActions</li><li>mgmt.supports.firmwareActions</li><li>status.alert.enabled</li></ul>",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/_bookmark"
+        }, {
+          "$ref" : "#/parameters/_limit"
+        }, {
+          "$ref" : "#/parameters/_sort"
+        }, {
+          "$ref" : "#/parameters/_facets"
+        }, {
+          "$ref" : "#/parameters/deviceIdSearchParameter"
+        }, {
+          "$ref" : "#/parameters/statusAlertSearchParameter"
+        }, {
+          "$ref" : "#/parameters/mgmtDormantSearchParameter"
+        }, {
+          "$ref" : "#/parameters/mgmtSupportsDeviceActionsSearchParameter"
+        }, {
+          "$ref" : "#/parameters/mgmtSupportsFirmwareActionsSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDescriptionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDescriptiveLocationSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoDeviceClassSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoFwVersionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoHwVersionSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoManufacturerSearchParameter"
+        }, {
+          "$ref" : "#/parameters/deviceInfoModelSearchParameter"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of devices",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceListResponse"
+            },
+            "examples" : {
+              "application/json" : {
+                "bookmark" : "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "meta" : {
+                  "facets" : {
+                    "status.alert.enabled" : {
+                      "false" : 2
+                    },
+                    "deviceInfo.model" : {
+                      "7865" : 1,
+                      "8000" : 1
+                    }
+                  },
+                  "total_rows" : 2
+                },
+                "results" : [ {
+                  "id" : "d:abc123:myType:myDevice",
+                  "typeId" : "myType",
+                  "deviceId" : "myDevice",
+                  "deviceInfo" : {
+                    "serialNumber" : "100087",
+                    "manufacturer" : "ACME Co.",
+                    "model" : "7865",
+                    "deviceClass" : "A",
+                    "description" : "My shiny device",
+                    "fwVersion" : "1.0.0",
+                    "hwVersion" : "1.0",
+                    "descriptiveLocation" : "Office 5, D Block"
+                  },
+                  "metadata" : {
+                    "customField1" : "customValue1",
+                    "customField2" : "customValue2"
+                  },
+                  "registration" : {
+                    "auth" : {
+                      "id" : "ibmer@uk.ibm.com",
+                      "type" : "person"
+                    },
+                    "date" : "2015-04-08T11:23:23+00:00"
+                  },
+                  "status" : {
+                    "alert" : {
+                      "enabled" : false,
+                      "timestamp" : "2015-04-08T11:23:24+00:00"
+                    }
+                  },
+                  "refs" : {
+                    "location" : "/device/types/myType/devices/myDevice/location",
+                    "mgmt" : "/device/types/myType/devices/myDevice/mgmt",
+                    "diag" : {
+                      "logs" : "/device/types/myType/devices/myDevice/diag/logs",
+                      "errorCodes" : "/device/types/myType/devices/myDevice/diag/errorCodes"
+                    }
+                  }
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The device type does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Add device",
+        "description" : "Adds a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "name" : "device",
+          "in" : "body",
+          "description" : "Device to be added",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceAdditionRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Device added",
+            "headers" : {
+              "Location" : {
+                "type" : "string",
+                "description" : "Location (resource URI) for the device"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DeviceAdditionResponse"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "d:abc123:myType:myDevice",
+                "typeId" : "myType",
+                "deviceId" : "myDevice",
+                "deviceInfo" : {
+                  "serialNumber" : "100087",
+                  "manufacturer" : "ACME Co.",
+                  "model" : "7865",
+                  "deviceClass" : "A",
+                  "description" : "My shiny device",
+                  "fwVersion" : "1.0.0",
+                  "hwVersion" : "1.0",
+                  "descriptiveLocation" : "Office 5, D Block"
+                },
+                "metadata" : {
+                  "customField1" : "customValue1",
+                  "customField2" : "customValue2"
+                },
+                "authToken" : "YU*&S^*(HHDD$SJ1Qee12AA",
+                "registration" : {
+                  "auth" : {
+                    "id" : "ibmer@uk.ibm.com",
+                    "type" : "person"
+                  },
+                  "date" : "2015-04-08T11:23:23+00:00"
+                },
+                "status" : {
+                  "alert" : {
+                    "enabled" : false,
+                    "timestamp" : "2015-04-08T11:23:24+00:00"
+                  }
+                },
+                "refs" : {
+                  "location" : "/device/types/myType/devices/myDevice/location",
+                  "mgmt" : "/device/types/myType/devices/myDevice/mgmt",
+                  "diag" : {
+                    "logs" : "/device/types/myType/devices/myDevice/diag/logs",
+                    "errorCodes" : "/device/types/myType/devices/myDevice/diag/errorCodes"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request (No body, invalid JSON, unexpected key, bad value)",
+            "schema" : {
+              "$ref" : "#/definitions/InvalidRequestMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0007E: The request was not valid. Review the constraint violations provided.",
+                "exception" : {
+                  "id" : "CUDRS0007E",
+                  "properties" : [ ]
+                },
+                "violations" : [ {
+                  "message" : "CUDRS0009E: The id field is missing. A value must be specified.",
+                  "exception" : {
+                    "id" : "CUDRS0009E",
+                    "properties" : [ "id" ]
+                  }
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "409" : {
+            "description" : "The device already exists",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}" : {
+      "get" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Get device",
+        "description" : "Gets device details.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "name" : "_expand",
+          "in" : "query",
+          "description" : "Optional extensions to expand",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "enum" : [ "location", "mgmt", "all" ],
+          "collectionFormat" : "csv"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device",
+            "schema" : {
+              "$ref" : "#/definitions/Device"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "d:abc123:myType:myDevice",
+                "typeId" : "myType",
+                "deviceId" : "myDevice",
+                "deviceInfo" : {
+                  "serialNumber" : "100087",
+                  "manufacturer" : "ACME Co.",
+                  "model" : "7865",
+                  "deviceClass" : "A",
+                  "description" : "My shiny device",
+                  "fwVersion" : "1.0.0",
+                  "hwVersion" : "1.0",
+                  "descriptiveLocation" : "Office 5, D Block"
+                },
+                "metadata" : {
+                  "customField1" : "customValue1",
+                  "customField2" : "customValue2"
+                },
+                "registration" : {
+                  "auth" : {
+                    "id" : "ibmer@uk.ibm.com",
+                    "type" : "person"
+                  },
+                  "date" : "2015-04-08T11:23:23+00:00"
+                },
+                "status" : {
+                  "alert" : {
+                    "enabled" : false,
+                    "timestamp" : "2015-04-08T11:23:24+00:00"
+                  }
+                },
+                "refs" : {
+                  "location" : "/device/types/myType/devices/myDevice/location",
+                  "mgmt" : "/device/types/myType/devices/myDevice/mgmt",
+                  "diag" : {
+                    "logs" : "/device/types/myType/devices/myDevice/diag/logs",
+                    "errorCodes" : "/device/types/myType/devices/myDevice/diag/errorCodes"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The device does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Update device",
+        "description" : "Updates a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "name" : "deviceUpdate",
+          "in" : "body",
+          "description" : "Device update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceConcise"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "d:abc123:myType:myDevice",
+                "typeId" : "myType",
+                "deviceId" : "myDevice",
+                "deviceInfo" : {
+                  "serialNumber" : "100087",
+                  "manufacturer" : "ACME Co.",
+                  "model" : "7865",
+                  "deviceClass" : "A",
+                  "description" : "My shiny device",
+                  "fwVersion" : "1.0.0",
+                  "hwVersion" : "1.0",
+                  "descriptiveLocation" : "Office 5, D Block"
+                },
+                "metadata" : {
+                  "customField1" : "customValue1",
+                  "customField2" : "customValue2"
+                },
+                "registration" : {
+                  "auth" : {
+                    "id" : "ibmer@uk.ibm.com",
+                    "type" : "person"
+                  },
+                  "date" : "2015-04-08T11:23:23+00:00"
+                },
+                "status" : {
+                  "alert" : {
+                    "enabled" : false,
+                    "timestamp" : "2015-04-08T11:23:24+00:00"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request (No body, invalid JSON, unexpected key, bad value)",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0006E: An invalid JSON document was provided as the request content.",
+                "exception" : [ {
+                  "id" : "CUDRS0006E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The organization, device type or device does not exist"
+          },
+          "409" : {
+            "description" : "The update could not be completed due to a conflict",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Remove device",
+        "description" : "Removes a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Device was successfully removed"
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}/devices" : {
+      "get" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Get devices that are connected through the gateway",
+        "description" : "Gets device information that are connected through the specified gateway(typeId, deviceId) to IoT Foundation.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device information of devices connected through gateway were successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceListResponse"
+            }
+          },
+          "403" : {
+            "description" : "Request is only allowed if the classId of the device type is 'Gateway'"
+          },
+          "404" : {
+            "description" : "Device type or device not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}/diag/logs" : {
+      "get" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Get all device diagnostic logs",
+        "description" : "Gets diagnostic logs for a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device information was successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceDiagnosticsLog"
+            }
+          },
+          "404" : {
+            "description" : "Device not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Add device diagnostic log information",
+        "description" : "Adds an entry in the log of diagnostic information for the device. The log may be pruned as the new entry is added. If no date is supplied, the entry is added with the current date and time.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "name" : "log",
+          "in" : "body",
+          "description" : "Diagnostic log entry to be added",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceDiagnosticsLogEntryRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Diagnostic entry was successfully added",
+            "headers" : {
+              "Location" : {
+                "type" : "string",
+                "description" : "Location (resource URI) for the log entry"
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Clear diagnostic log",
+        "description" : "Clears the diagnostic log for the device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Diagnostic log successfully cleared"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}/diag/logs/{logId}" : {
+      "get" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Get device diagnostic log",
+        "description" : "Gets diagnostic log for a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "$ref" : "#/parameters/logIdPathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device log was successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceDiagnosticsLogEntry"
+            }
+          },
+          "404" : {
+            "description" : "Device log not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Delete diagnostic log",
+        "description" : "Delete this diagnostic log for the device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "$ref" : "#/parameters/logIdPathParam"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Diagnostic log successfully cleared"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}/diag/errorCodes" : {
+      "get" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Get device diagnostic error codes",
+        "description" : "Gets diagnostic error codes for a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device information was successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceDiagnosticsErrorCodes"
+            }
+          },
+          "404" : {
+            "description" : "Device not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Add diagnostic error code for a device",
+        "description" : "Adds an error code to the list of error codes for the device. The list may be pruned as the new entry is added.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "name" : "errorCode",
+          "in" : "body",
+          "description" : "Error code to be added",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceDiagnosticsErrorCode"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Error code was successfully added",
+            "headers" : {
+              "Location" : {
+                "type" : "string",
+                "description" : "Location (resource URI) for for error codes"
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Device Diagnostics" ],
+        "summary" : "Clear error codes",
+        "description" : "Clears the list of error codes for the device. The list is replaced with a single error code of zero.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Error codes successfully cleared"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}/location" : {
+      "get" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Get device location information",
+        "description" : "Gets location information for a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device information was successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceLocation"
+            },
+            "examples" : {
+              "application/json" : {
+                "longitude" : 200.0,
+                "latitude" : 100.0,
+                "elevation" : 50.0,
+                "accuracy" : 5.0,
+                "measuredTimeStamp" : "2015-04-08T11:23:23+00:00",
+                "updatedTimeStamp" : "2015-04-08T11:23:23+00:00"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Device location information not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Update device location information",
+        "description" : "Updates the location information for a device. If no date is supplied, the entry is added with the current date and time.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        }, {
+          "name" : "location",
+          "in" : "body",
+          "description" : "Device location information",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/UpdateableDeviceLocation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device location information successfully updated",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceLocation"
+            },
+            "examples" : {
+              "application/json" : {
+                "longitude" : 200.0,
+                "latitude" : 100.0,
+                "elevation" : 50.0,
+                "accuracy" : 5.0,
+                "measuredTimeStamp" : "2015-04-08T11:23:23+00:00",
+                "updatedTimeStamp" : "2015-04-08T11:23:23+00:00"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Device location information not found"
+          },
+          "409" : {
+            "description" : "The update could not be completed due to a conflict",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{typeId}/devices/{deviceId}/mgmt" : {
+      "get" : {
+        "tags" : [ "Devices" ],
+        "summary" : "Get device management information",
+        "description" : "Gets device management information for a device.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypePathParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdPathParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device information was successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceMgmt"
+            }
+          },
+          "404" : {
+            "description" : "Device not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/logs/connection" : {
+      "get" : {
+        "tags" : [ "Problem Determination" ],
+        "summary" : "List device connection log events",
+        "description" : "List connection log events for a device to aid in diagnosing connectivity problems. The entries record successful connection, unsuccessful connection attempts, intentional disconnection and server-initiated disconnection.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/deviceTypeQueryParam"
+        }, {
+          "$ref" : "#/parameters/deviceIdQueryParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Connection logs were successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/ListOfLogEntries"
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The device does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/historian/" : {
+      "get" : {
+        "tags" : [ "Historical Event Retrieval" ],
+        "summary" : "View events across all devices registered to the organization",
+        "description" : "View events across all devices registered to the organization",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/_bookmark"
+        }, {
+          "$ref" : "#/parameters/historianEvtTypeParam"
+        }, {
+          "$ref" : "#/parameters/historianStartParam"
+        }, {
+          "$ref" : "#/parameters/historianEndParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device events",
+            "schema" : {
+              "$ref" : "#/definitions/HistorianList"
+            }
+          }
+        }
+      }
+    },
+    "/historian/types/{deviceType}" : {
+      "get" : {
+        "tags" : [ "Historical Event Retrieval" ],
+        "summary" : "View events across all devices of a specific type",
+        "description" : "View events across all devices of a specific type",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "deviceType",
+          "in" : "path",
+          "type" : "string",
+          "required" : true,
+          "description" : "Device type"
+        }, {
+          "$ref" : "#/parameters/_bookmark"
+        }, {
+          "$ref" : "#/parameters/historianEvtTypeParam"
+        }, {
+          "$ref" : "#/parameters/historianStartParam"
+        }, {
+          "$ref" : "#/parameters/historianEndParam"
+        }, {
+          "$ref" : "#/parameters/historianTopParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeTypeParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device events",
+            "headers" : {
+              "cursorid" : {
+                "type" : "string",
+                "description" : "Use the cursorId response header returned by the initial request to iterate through the list of historical records"
+              },
+              "Set-Cookie" : {
+                "type" : "string",
+                "description" : "iotHistorianSessionId"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/HistorianList"
+            }
+          }
+        }
+      }
+    },
+    "/historian/types/{deviceType}/devices/{deviceId}" : {
+      "get" : {
+        "tags" : [ "Historical Event Retrieval" ],
+        "summary" : "View events for a specific device",
+        "description" : "View events for a specific device",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "deviceType",
+          "in" : "path",
+          "type" : "string",
+          "required" : true,
+          "description" : "Device type"
+        }, {
+          "name" : "deviceId",
+          "in" : "path",
+          "type" : "string",
+          "required" : true,
+          "description" : "Device id"
+        }, {
+          "$ref" : "#/parameters/_bookmark"
+        }, {
+          "$ref" : "#/parameters/historianEvtTypeParam"
+        }, {
+          "$ref" : "#/parameters/historianStartParam"
+        }, {
+          "$ref" : "#/parameters/historianEndParam"
+        }, {
+          "$ref" : "#/parameters/historianTopParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeTypeParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device events",
+            "headers" : {
+              "cursorid" : {
+                "type" : "string",
+                "description" : "Use the cursorId response header returned by the initial request to iterate through the list of historical records"
+              },
+              "Set-Cookie" : {
+                "type" : "string",
+                "description" : "iotHistorianSessionId"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/HistorianList"
+            }
+          }
+        }
+      }
+    },
+    "/mgmt/requests" : {
+      "get" : {
+        "tags" : [ "Device Management Requests" ],
+        "summary" : "List device management requests",
+        "description" : "Gets a list of device management requests, which can be in progress or recently completed.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Request list",
+            "schema" : {
+              "$ref" : "#/definitions/MgmtRequestListResponse"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Device Management Requests" ],
+        "summary" : "Initiate a device management request",
+        "description" : "Initiates a device management request, such as reboot.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "deviceManagementInitiationRequest",
+          "in" : "body",
+          "description" : "Device management request details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/MgmtInitiationRequest"
+          }
+        } ],
+        "responses" : {
+          "202" : {
+            "description" : "The request has been accepted for processing",
+            "headers" : {
+              "Location" : {
+                "type" : "string",
+                "description" : "Location (resource URI) for the request"
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/mgmt/requests/{requestId}" : {
+      "get" : {
+        "tags" : [ "Device Management Requests" ],
+        "summary" : "Get device management request",
+        "description" : "Gets details of a device management request.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "required" : true,
+          "description" : "Request ID of a device management request",
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Request status",
+            "schema" : {
+              "$ref" : "#/definitions/MgmtRequest"
+            }
+          },
+          "404" : {
+            "description" : "Request status not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Device Management Requests" ],
+        "summary" : "Clear device management request status",
+        "description" : "Clears the status of a device management request. You can use this operation to clear the status for a completed request, or for an in-progress request which may never complete due to a problem.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "required" : true,
+          "description" : "Request ID of a device management request",
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Request status cleared"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/mgmt/requests/{requestId}/deviceStatus" : {
+      "get" : {
+        "tags" : [ "Device Management Requests" ],
+        "summary" : "Get list of device management request device statuses",
+        "description" : "Get a list of device management request device statuses",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "required" : true,
+          "description" : "Request ID of a device management request",
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Request status",
+            "schema" : {
+              "$ref" : "#/definitions/MgmtRequestActionListResponse"
+            }
+          },
+          "404" : {
+            "description" : "Request status not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/mgmt/requests/{requestId}/deviceStatus/{deviceType}/{deviceId}" : {
+      "get" : {
+        "tags" : [ "Device Management Requests" ],
+        "summary" : "Get individual device management request device status",
+        "description" : "Get an individual device mangaement request device status",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "required" : true,
+          "description" : "Request ID of a device management request",
+          "type" : "string"
+        }, {
+          "name" : "deviceType",
+          "in" : "path",
+          "required" : true,
+          "description" : "Device type",
+          "type" : "string"
+        }, {
+          "name" : "deviceId",
+          "in" : "path",
+          "required" : true,
+          "description" : "Device id",
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Request status",
+            "schema" : {
+              "$ref" : "#/definitions/MgmtRequestDeviceStatus"
+            }
+          },
+          "404" : {
+            "description" : "Request status not found"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/usage/active-devices" : {
+      "get" : {
+        "tags" : [ "Usage Management" ],
+        "summary" : "Retrieve the number of active devices over a period of time",
+        "description" : "Retrieve the number of active devices over a period of time",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "Start date in one of the following formats: YYYY (first day of the year), YYYY-MM (first day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "End date in one of the following formats: YYYY (last day of the year), YYYY-MM (last day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "detail",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Indicates whether a daily breakdown will be included in the resultset"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Result set",
+            "schema" : {
+              "$ref" : "#/definitions/ActiveDevices"
+            },
+            "examples" : {
+              "application/json" : {
+                "start" : "2015-04-01",
+                "end" : "2015-04-04",
+                "average" : 31.25,
+                "days" : [ {
+                  "date" : "2015-04-01",
+                  "total" : 20
+                }, {
+                  "date" : "2015-04-02",
+                  "total" : 30
+                }, {
+                  "date" : "2015-04-03",
+                  "total" : 50
+                }, {
+                  "date" : "2015-04-04",
+                  "total" : 25
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDUS0002E: Parameter missing.",
+                "exception" : [ {
+                  "id" : "CUDUS0002E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/usage/historical-data" : {
+      "get" : {
+        "tags" : [ "Usage Management" ],
+        "summary" : "Retrieve the amount of storage being used by historical event data",
+        "description" : "Retrieve the amount of storage being used by historical event data",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "Start date in one of the following formats: YYYY (first day of the year), YYYY-MM (first day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "End date in one of the following formats: YYYY (last day of the year), YYYY-MM (last day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "detail",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Indicates whether a daily breakdown will be included in the resultset"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Result set",
+            "schema" : {
+              "$ref" : "#/definitions/HistoricalData"
+            },
+            "examples" : {
+              "application/json" : {
+                "start" : "2015-04-01",
+                "end" : "2015-04-04",
+                "average" : 5259340.0,
+                "days" : [ {
+                  "date" : "2015-04-01",
+                  "total" : 5231952
+                }, {
+                  "date" : "2015-04-02",
+                  "total" : 5250208
+                }, {
+                  "date" : "2015-04-03",
+                  "total" : 5268464
+                }, {
+                  "date" : "2015-04-04",
+                  "total" : 5286736
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDUS0002E: Parameter missing.",
+                "exception" : [ {
+                  "id" : "CUDUS0002E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/usage/data-traffic" : {
+      "get" : {
+        "tags" : [ "Usage Management" ],
+        "summary" : "Retrieve the amount of data used",
+        "description" : "Retrieve the amount of data used",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "Start date in one of the following formats: YYYY (first day of the year), YYYY-MM (first day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "End date in one of the following formats: YYYY (last day of the year), YYYY-MM (last day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "detail",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Indicates whether a daily breakdown will be included in the resultset"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Result set",
+            "schema" : {
+              "$ref" : "#/definitions/DataTraffic"
+            },
+            "examples" : {
+              "application/json" : {
+                "start" : "2015-04-01",
+                "end" : "2015-04-04",
+                "total" : 77953368,
+                "average" : 19488342,
+                "days" : [ {
+                  "date" : "2015-04-01",
+                  "total" : 19447737
+                }, {
+                  "date" : "2015-04-02",
+                  "total" : 19607362
+                }, {
+                  "date" : "2015-04-03",
+                  "total" : 19451507
+                }, {
+                  "date" : "2015-04-04",
+                  "total" : 19446762
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDUS0002E: Parameter missing.",
+                "exception" : [ {
+                  "id" : "CUDUS0002E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/service-status" : {
+      "get" : {
+        "tags" : [ "Service Status" ],
+        "summary" : "Retrieve the status of services for an organization",
+        "description" : "Retrieve the organization-specific status of each of the services offered by the Internet of Things Foundation.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Service status",
+            "schema" : {
+              "$ref" : "#/definitions/dataCenterStatus"
+            },
+            "examples" : {
+              "application/json" : {
+                "us" : [ {
+                  "messaging" : "green"
+                }, {
+                  "dashboard" : "green"
+                }, {
+                  "historian" : "green"
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/StatusUnexpectedError"
+          }
+        }
+      }
+    },
+    "/device/types/{deviceType}/devices/{deviceId}/events/{eventName}" : {
+      "parameters" : [ {
+        "name" : "deviceType",
+        "in" : "path",
+        "description" : "Device type",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "deviceId",
+        "in" : "path",
+        "description" : "Device id",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "eventName",
+        "in" : "path",
+        "description" : "Event name",
+        "required" : true,
+        "type" : "string"
+      } ],
+      "post" : {
+        "tags" : [ "Connectivity" ],
+        "summary" : "Send device event",
+        "description" : "Send an event from a device.",
+        "parameters" : [ {
+          "name" : "event",
+          "in" : "body",
+          "description" : "Event data",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/EventPayload"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Invalid request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/application/types/{deviceType}/devices/{deviceId}/events/{eventName}" : {
+      "parameters" : [ {
+        "name" : "deviceType",
+        "in" : "path",
+        "description" : "Device type",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "deviceId",
+        "in" : "path",
+        "description" : "Device id",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "eventName",
+        "in" : "path",
+        "description" : "Event name",
+        "required" : true,
+        "type" : "string"
+      } ],
+      "post" : {
+        "tags" : [ "Connectivity" ],
+        "summary" : "Send device event",
+        "description" : "Send an event from an application simulating a device.",
+        "parameters" : [ {
+          "name" : "event",
+          "in" : "body",
+          "description" : "Event data",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/EventPayload"
+          }
+        } ],
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Invalid request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/devices/types/{typeId}/devices/{deviceId}/exts/{extensionId}/ops/{operationId}" : {
+      "parameters" : [ {
+        "$ref" : "#/parameters/deviceTypePathParam"
+      }, {
+        "$ref" : "#/parameters/deviceIdPathParam"
+      }, {
+        "name" : "extensionId",
+        "in" : "path",
+        "description" : "Extension id",
+        "required" : true,
+        "type" : "string"
+      }, {
+        "name" : "operationId",
+        "in" : "path",
+        "description" : "Operation id",
+        "required" : true,
+        "type" : "string"
+      } ],
+      "get" : {
+        "tags" : [ "External Services" ],
+        "summary" : "Invoke an operation on an external service that has been integrated with the IoTF platform.",
+        "description" : "<ul><li>Actual request method, request/response parameters and response code depends on the specified extension and operation IDs.</li> <li>Note that certain operations may require additional configuration to be specified for the organization and/or device.</li></ul> <p>Refer to extension <a target='_blank' href='/reference/extensions/index.html'>documentation</a> for details</p>",
+        "parameters" : [ {
+          "name" : "params",
+          "in" : "body",
+          "description" : "Request Parameters",
+          "required" : false,
+          "schema" : {
+            "type" : "object"
+          }
+        } ],
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "schema" : {
+              "properties" : {
+                "result" : {
+                  "type" : "object",
+                  "description" : "Results parsed from response from external service"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            }
+          }
+        }
+      }
+    }
+  },
+  "parameters" : {
+    "_bookmark" : {
+      "name" : "_bookmark",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Used for paging through results. Issue the first request without specifying a bookmark, then take the bookmark returned in the response and provide it on the request for the next page. Repeat until the end of the result set indicated by the absence of a bookmark. Each request must use exactly the same values for the other parameters, or the results are undefined."
+    },
+    "_limit" : {
+      "name" : "_limit",
+      "in" : "query",
+      "description" : "Maximum number of results returned per page.",
+      "type" : "number",
+      "default" : 25
+    },
+    "_sort" : {
+      "name" : "_sort",
+      "in" : "query",
+      "description" : "Define the sort order of results.  Specify a comma seperated list of properties, enclosed witin square brackets. Pefix fieldnames with '-' to sort in descending order.  For example: property1,property2",
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "collectionFormat" : "csv"
+      }
+    },
+    "_facets" : {
+      "name" : "_facets",
+      "in" : "query",
+      "description" : "Define the facets to return.  For example: property1,property2",
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "collectionFormat" : "csv"
+      }
+    },
+    "deviceTypePathParam" : {
+      "name" : "typeId",
+      "in" : "path",
+      "type" : "string",
+      "description" : "Device type ID",
+      "required" : true
+    },
+    "deviceIdPathParam" : {
+      "name" : "deviceId",
+      "in" : "path",
+      "type" : "string",
+      "description" : "Device ID",
+      "required" : true
+    },
+    "deviceTypeQueryParam" : {
+      "name" : "typeId",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Device type ID",
+      "required" : true
+    },
+    "deviceIdQueryParam" : {
+      "name" : "deviceId",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Device ID",
+      "required" : true
+    },
+    "logIdPathParam" : {
+      "name" : "logId",
+      "in" : "path",
+      "type" : "string",
+      "description" : "Log ID",
+      "required" : true
+    },
+    "typeIdSearchParameter" : {
+      "name" : "typeId",
+      "in" : "query",
+      "description" : "Optional filter of results by type ID",
+      "type" : "string"
+    },
+    "deviceIdSearchParameter" : {
+      "name" : "deviceId",
+      "in" : "query",
+      "description" : "Optional filter of results by device ID",
+      "type" : "string"
+    },
+    "statusAlertSearchParameter" : {
+      "name" : "status.alert.enabled",
+      "in" : "query",
+      "description" : "Optional filter of results by alert state",
+      "type" : "boolean"
+    },
+    "mgmtDormantSearchParameter" : {
+      "name" : "mgmt.dormant",
+      "in" : "query",
+      "description" : "Optional filter of results by dormant state",
+      "type" : "boolean"
+    },
+    "mgmtSupportsDeviceActionsSearchParameter" : {
+      "name" : "mgmt.supports.deviceActions",
+      "in" : "query",
+      "description" : "Optional filter of results by support for device actions",
+      "type" : "boolean"
+    },
+    "mgmtSupportsFirmwareActionsSearchParameter" : {
+      "name" : "mgmt.supports.firmwareActions",
+      "in" : "query",
+      "description" : "Optional filter of results by support for firmware actions",
+      "type" : "boolean"
+    },
+    "deviceInfoDescriptionSearchParameter" : {
+      "name" : "deviceInfo.serialNumber",
+      "in" : "query",
+      "description" : "Optional filter of results by serial number",
+      "type" : "string"
+    },
+    "deviceInfoDescriptiveLocationSearchParameter" : {
+      "name" : "deviceInfo.descriptiveLocation",
+      "in" : "query",
+      "description" : "Optional filter of results by device location",
+      "type" : "string"
+    },
+    "deviceInfoDeviceClassSearchParameter" : {
+      "name" : "deviceInfo.deviceClass",
+      "in" : "query",
+      "description" : "Optional filter of results by device class",
+      "type" : "string"
+    },
+    "deviceInfoFwVersionSearchParameter" : {
+      "name" : "deviceInfo.fwVersion",
+      "in" : "query",
+      "description" : "Optional filter of results by firmware version",
+      "type" : "string"
+    },
+    "deviceInfoHwVersionSearchParameter" : {
+      "name" : "deviceInfo.hwVersion",
+      "in" : "query",
+      "description" : "Optional filter of results by hardware version",
+      "type" : "string"
+    },
+    "deviceInfoManufacturerSearchParameter" : {
+      "name" : "deviceInfo.manufacturer",
+      "in" : "query",
+      "description" : "Optional filter of results by manufacturer name",
+      "type" : "string"
+    },
+    "deviceInfoModelSearchParameter" : {
+      "name" : "deviceInfo.model",
+      "in" : "query",
+      "description" : "Optional filter of results by device model",
+      "type" : "string"
+    },
+    "historianEvtTypeParam" : {
+      "name" : "evt_type",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Restrict results only to those events published under this event identifier"
+    },
+    "historianStartParam" : {
+      "name" : "start",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Number of milliseconds since January 1, 1970, 00:00:00 GMT).  Restrict results to events published after this date"
+    },
+    "historianEndParam" : {
+      "name" : "end",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Number of milliseconds since January 1, 1970, 00:00:00 GMT). Restrict results to events published before this date"
+    },
+    "historianTopParam" : {
+      "name" : "top",
+      "in" : "query",
+      "type" : "integer",
+      "description" : "Number between 1 and 100. Restrict the number of records returned (default=100)"
+    },
+    "historianSummarizeParam" : {
+      "name" : "summarize",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Array.  A list of fields from the JSON event payload on which to perform the aggregate function specified by the summarize_type parameter. The format for the parameter is {field1,field2,...,fieldN}"
+    },
+    "historianSummarizeTypeParam" : {
+      "name" : "summarize_type",
+      "in" : "query",
+      "type" : "string",
+      "enum" : [ "avg", "count", "min", "max", "sum", "range", "stdev", "variance" ],
+      "description" : "The aggregation to perform on the fields specified by the summarize parameter"
+    }
+  },
+  "definitions" : {
+    "typeId" : {
+      "type" : "string",
+      "description" : "Device Type ID"
+    },
+    "deviceId" : {
+      "type" : "string",
+      "description" : "Device ID"
+    },
+    "metadata" : {
+      "type" : "object",
+      "description" : "Free-form metadata"
+    },
+    "bookmark" : {
+      "type" : "string",
+      "description" : "Used to iterate through result set. To request the next page, repeat the request specifying this as the value of the '_bookmark' parameter."
+    },
+    "InvalidRequestMessage" : {
+      "required" : [ "message", "exception", "violations" ],
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "English language error message"
+        },
+        "exception" : {
+          "$ref" : "#/definitions/ErrorMessageException"
+        },
+        "violations" : {
+          "type" : "array",
+          "description" : "List of constraint violations for the invalid request",
+          "items" : {
+            "$ref" : "#/definitions/ErrorMessage"
+          }
+        }
+      }
+    },
+    "ErrorMessage" : {
+      "required" : [ "message", "exception" ],
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "English language error message"
+        },
+        "exception" : {
+          "$ref" : "#/definitions/ErrorMessageException"
+        }
+      }
+    },
+    "ErrorMessageException" : {
+      "required" : [ "id", "properties" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Unique message ID of the exception encountered"
+        },
+        "properties" : {
+          "type" : "array",
+          "description" : "List of arguments for this specific instance of the exception",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "Organization" : {
+      "required" : [ "id", "name", "enabled", "type", "config", "created", "updated" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Organization ID"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "User assigned name for the organization"
+        },
+        "enabled" : {
+          "type" : "boolean",
+          "description" : "Whether the organization is enabled.  If the organization is disabled all API calls will be rejected and messaging will be disabled across all devices and applications"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "Bluemix Free", "Bluemix Bronze", "Bluemix Silver", "Bluemix Gold", "Pending", "Trial", "Bronze", "Silver", "Gold", "Subscription" ]
+        },
+        "bluemix" : {
+          "$ref" : "#/definitions/OrganizationBluemixConfig"
+        },
+        "ibmMarketplace" : {
+          "$ref" : "#/definitions/OrganizationIbmMarketplaceConfig"
+        },
+        "config" : {
+          "$ref" : "#/definitions/OrganizationConfig"
+        },
+        "created" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "ISO8601 date-time that the organization was created"
+        },
+        "updated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "ISO8601 date-time that the organization was last updated"
+        }
+      },
+      "example" : {
+        "id" : "ab8de4",
+        "name" : "My organization",
+        "enabled" : true,
+        "type" : "Bluemix Free",
+        "bluemix" : {
+          "region" : "us-south",
+          "organization" : "025273cb-d3c5-4204-9fef-ad5f84c2af02",
+          "space" : "6d0535f9-9f15-48f3-8b67-43f59a3a5c65",
+          "serviceInstance" : "90d13f02-152c-4cd7-b23e-aaae87b2f338",
+          "plan" : "iotf-service-bronze-id"
+        },
+        "config" : {
+          "historian" : {
+            "enabled" : true,
+            "retention" : 1
+          }
+        },
+        "created" : "2015-04-08T11:23:23+00:00",
+        "updated" : "2015-04-08T11:23:23+00:00"
+      }
+    },
+    "OrganizationBluemixConfig" : {
+      "description" : "Only present if the organization was provisioned through Bluemix.",
+      "required" : [ "region", "organization", "space", "serviceInstance", "plan" ],
+      "properties" : {
+        "region" : {
+          "type" : "string",
+          "description" : "The name of the Bluemix region this organization was provisioned in."
+        },
+        "organization" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "The GUID of the associated organization in Bluemix."
+        },
+        "space" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "The GUID of the associated space in Bluemix."
+        },
+        "serviceInstance" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "The GUID of the service instance in Bluemix."
+        },
+        "plan" : {
+          "type" : "string",
+          "description" : "The ID of the pricing plan selected for this organization."
+        }
+      },
+      "example" : {
+        "region" : "us-south",
+        "organization" : "025273cb-d3c5-4204-9fef-ad5f84c2af02",
+        "space" : "6d0535f9-9f15-48f3-8b67-43f59a3a5c65",
+        "serviceInstance" : "90d13f02-152c-4cd7-b23e-aaae87b2f338",
+        "plan" : "iotf-service-bronze-id"
+      }
+    },
+    "OrganizationIbmMarketplaceConfig" : {
+      "description" : "Only present if the organization was provisioned through IBM Marketplace.",
+      "required" : [ "customerAccountId", "masterSubscriptionId" ],
+      "properties" : {
+        "customerAccountId" : {
+          "type" : "number",
+          "description" : "The ID of the owning customer account in IBM Marketplace."
+        },
+        "masterSubscriptionId" : {
+          "type" : "number",
+          "description" : "The ID of the subscription in IBM Marketplace associated with this organization."
+        }
+      }
+    },
+    "OrganizationConfig" : {
+      "description" : "Overall configuration of the organization.",
+      "required" : [ "historian" ],
+      "properties" : {
+        "historian" : {
+          "$ref" : "#/definitions/HistorianConfig"
+        }
+      },
+      "example" : {
+        "historian" : {
+          "enabled" : true,
+          "retention" : 1
+        }
+      }
+    },
+    "HistorianConfig" : {
+      "description" : "Configuration of the historian service for this organization.",
+      "required" : [ "enabled" ],
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "description" : "Enable or disable historian"
+        },
+        "retention" : {
+          "type" : "number",
+          "description" : "Number of months to retain data for; 0 means retain forever"
+        }
+      },
+      "example" : {
+        "enabled" : true,
+        "retention" : 1
+      }
+    },
+    "DeviceBulkRegistrationRequest" : {
+      "required" : [ "typeId", "deviceId" ],
+      "properties" : {
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "location" : {
+          "$ref" : "#/definitions/UpdateableDeviceLocation"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/metadata"
+        },
+        "authToken" : {
+          "type" : "string",
+          "description" : "Authentication token, will be generated if not supplied"
+        }
+      }
+    },
+    "DeviceBulkRegistrationRequestList" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceBulkRegistrationRequest"
+      }
+    },
+    "DeviceBatchResponse" : {
+      "type" : "object",
+      "required" : [ "typeId", "deviceId", "authToken", "success" ],
+      "properties" : {
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "authToken" : {
+          "type" : "string"
+        },
+        "success" : {
+          "type" : "boolean",
+          "description" : "Whether this device was successfully registered"
+        }
+      }
+    },
+    "DeviceWithPasswordList" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceBatchResponse"
+      }
+    },
+    "DeviceTarget" : {
+      "required" : [ "typeId", "deviceId" ],
+      "properties" : {
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        }
+      }
+    },
+    "DeviceBulkDeletionRequestList" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceTarget"
+      }
+    },
+    "DeviceBulkDeletionResponse" : {
+      "type" : "object",
+      "required" : [ "typeId", "deviceId", "success" ],
+      "properties" : {
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "success" : {
+          "type" : "boolean",
+          "description" : "Whether this device was successfully deleted"
+        }
+      }
+    },
+    "DeviceBulkDeletionResponseList" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceBulkDeletionResponse"
+      }
+    },
+    "Device" : {
+      "required" : [ "id", "deviceId", "typeId", "metadata", "registration" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Globally unique identifier for this device.  For use as a protocol client ID"
+        },
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Free-form metadata"
+        },
+        "registration" : {
+          "$ref" : "#/definitions/DeviceRegistration"
+        },
+        "status" : {
+          "$ref" : "#/definitions/DeviceStatus"
+        },
+        "refs" : {
+          "$ref" : "#/definitions/DeviceExtensionRefs"
+        },
+        "location" : {
+          "$ref" : "#/definitions/DeviceLocation"
+        },
+        "mgmt" : {
+          "$ref" : "#/definitions/DeviceMgmt"
+        }
+      }
+    },
+    "DeviceConcise" : {
+      "required" : [ "id", "typeId", "deviceId", "deviceInfo", "metadata", "registration", "status", "refs" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Globally unique identifier for this device.  For use as a protocol client ID"
+        },
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Free-form metadata"
+        },
+        "registration" : {
+          "$ref" : "#/definitions/DeviceRegistration"
+        },
+        "status" : {
+          "$ref" : "#/definitions/DeviceStatus"
+        },
+        "refs" : {
+          "$ref" : "#/definitions/DeviceExtensionRefs"
+        }
+      }
+    },
+    "DeviceAdditionResponse" : {
+      "required" : [ "id", "typeId", "deviceId", "deviceInfo", "metadata", "registration", "status", "authToken", "refs" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Globally unique identifier for this device.  For use as a protocol client ID"
+        },
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Free-form metadata"
+        },
+        "registration" : {
+          "$ref" : "#/definitions/DeviceRegistration"
+        },
+        "status" : {
+          "$ref" : "#/definitions/DeviceStatus"
+        },
+        "refs" : {
+          "$ref" : "#/definitions/DeviceExtensionRefs"
+        },
+        "authToken" : {
+          "type" : "string",
+          "description" : "Device authentication token"
+        }
+      }
+    },
+    "DeviceInfo" : {
+      "properties" : {
+        "serialNumber" : {
+          "type" : "string",
+          "description" : "The serial number of the device"
+        },
+        "manufacturer" : {
+          "type" : "string",
+          "description" : "The manufacturer of the device"
+        },
+        "model" : {
+          "type" : "string",
+          "description" : "The model of the device"
+        },
+        "deviceClass" : {
+          "type" : "string",
+          "description" : "The class of the device"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "The descriptive name of the device"
+        },
+        "fwVersion" : {
+          "type" : "string",
+          "description" : "The firmware version currently known to be on the device"
+        },
+        "hwVersion" : {
+          "type" : "string",
+          "description" : "The hardware version of the device"
+        },
+        "descriptiveLocation" : {
+          "type" : "string",
+          "description" : "A descriptive location, such as a room or building number, or a geographical region"
+        }
+      }
+    },
+    "DeviceStatus" : {
+      "required" : [ "alert" ],
+      "properties" : {
+        "alert" : {
+          "type" : "object",
+          "$ref" : "#/definitions/DeviceStatusAlert",
+          "description" : "Alert state"
+        }
+      }
+    },
+    "DeviceStatusAlert" : {
+      "required" : [ "enabled" ],
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "description" : "The indicator of the alert state (true, if in alert state; false otherwise)"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of alert state change (ISO8601)"
+        }
+      }
+    },
+    "DeviceExtensionDiagRefs" : {
+      "required" : [ "logs", "errorCodes" ],
+      "properties" : {
+        "logs" : {
+          "type" : "string",
+          "description" : "URI of diagnostic logs extension."
+        },
+        "errorCodes" : {
+          "type" : "string",
+          "description" : "URI of error codes extension."
+        }
+      }
+    },
+    "DeviceExtensionRefs" : {
+      "required" : [ "location", "diag" ],
+      "properties" : {
+        "location" : {
+          "type" : "string",
+          "description" : "URI of location extension."
+        },
+        "mgmt" : {
+          "type" : "string",
+          "description" : "URI of mgmt extension, if present."
+        },
+        "diag" : {
+          "$ref" : "#/definitions/DeviceExtensionDiagRefs"
+        }
+      }
+    },
+    "DeviceDiagnosticsErrorCodes" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceDiagnosticsErrorCodeEntry"
+      }
+    },
+    "DeviceDiagnosticsErrorCodeEntry" : {
+      "required" : [ "errorCode", "timestamp" ],
+      "properties" : {
+        "errorCode" : {
+          "type" : "integer",
+          "description" : "Error code"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of log entry (ISO8601)"
+        }
+      }
+    },
+    "DeviceDiagnosticsLog" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceDiagnosticsLogEntry"
+      }
+    },
+    "DeviceDiagnosticsLogEntry" : {
+      "required" : [ "id", "typeId", "deviceId", "message" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "ID for this log entry"
+        },
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "message" : {
+          "type" : "string",
+          "description" : "Diagnostic message"
+        },
+        "severity" : {
+          "type" : "number",
+          "description" : "Severity of the log entry - 0:informational, 1:warning, 2:error",
+          "default" : 0,
+          "minimum" : 0,
+          "maximum" : 2
+        },
+        "data" : {
+          "type" : "string",
+          "format" : "byte",
+          "description" : "Diagnostic data"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of log entry (ISO8601)"
+        }
+      }
+    },
+    "DeviceDiagnosticsLogEntryRequest" : {
+      "required" : [ "message" ],
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "Diagnostic message"
+        },
+        "severity" : {
+          "type" : "number",
+          "description" : "Severity of the log entry - 0:informational, 1:warning, 2:error",
+          "default" : 0,
+          "minimum" : 0,
+          "maximum" : 2
+        },
+        "data" : {
+          "type" : "string",
+          "format" : "byte",
+          "description" : "Diagnostic data"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of log entry (ISO8601)"
+        }
+      }
+    },
+    "DeviceDiagnosticsErrorCode" : {
+      "required" : [ "errorCode" ],
+      "properties" : {
+        "errorCode" : {
+          "type" : "integer",
+          "description" : "Error code"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of log entry (ISO8601)"
+        }
+      }
+    },
+    "DeviceAdditionRequest" : {
+      "required" : [ "deviceId" ],
+      "properties" : {
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "authToken" : {
+          "type" : "string",
+          "description" : "Authentication token, will be generated if not supplied"
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "location" : {
+          "$ref" : "#/definitions/UpdateableDeviceLocation"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Metadata of the device"
+        }
+      }
+    },
+    "DeviceUpdateRequest" : {
+      "properties" : {
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Metadata of the device"
+        },
+        "status" : {
+          "type" : "object",
+          "$ref" : "#/definitions/UpdateableDeviceStatus"
+        },
+        "extensions" : {
+          "type" : "object",
+          "description" : "Device level extension configuration"
+        }
+      }
+    },
+    "UpdateableDeviceStatus" : {
+      "required" : [ "alert" ],
+      "properties" : {
+        "alert" : {
+          "type" : "object",
+          "$ref" : "#/definitions/UpdateableDeviceStatusAlert",
+          "description" : "Alert state"
+        }
+      }
+    },
+    "UpdateableDeviceStatusAlert" : {
+      "required" : [ "enabled" ],
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "description" : "The indicator of the alert state (true, if in alert state; false otherwise)"
+        }
+      }
+    },
+    "DeviceListResponse" : {
+      "required" : [ "bookmark", "meta", "results" ],
+      "properties" : {
+        "bookmark" : {
+          "type" : "string",
+          "description" : "Used to iterate through result set. To request the next page, repeat the request specifying this as the value of the '_bookmark' parameter."
+        },
+        "meta" : {
+          "$ref" : "#/definitions/SearchResultMetaInformation"
+        },
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DeviceConcise"
+          }
+        }
+      }
+    },
+    "SearchResultMetaInformation" : {
+      "required" : [ "facets", "total_rows" ],
+      "properties" : {
+        "facets" : {
+          "type" : "object",
+          "description" : "Map whose keys are the facets requested, and values are the count for each facet."
+        },
+        "total_rows" : {
+          "type" : "number",
+          "description" : "Total number of results available for paging."
+        }
+      }
+    },
+    "DeviceLocation" : {
+      "required" : [ "longitude", "latitude" ],
+      "properties" : {
+        "longitude" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Longitude in decimal degrees using the WGS84 system"
+        },
+        "latitude" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Latitude in decimal degrees using the WGS84 system"
+        },
+        "elevation" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Elevation in meters using the WGS84 system"
+        },
+        "accuracy" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Accuracy of the position in meters"
+        },
+        "measuredDateTime" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of location measurement (ISO8601)"
+        },
+        "updatedDateTime" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of location update (ISO8601)"
+        }
+      }
+    },
+    "UpdateableDeviceLocation" : {
+      "required" : [ "longitude", "latitude" ],
+      "properties" : {
+        "longitude" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Longitude in decimal degrees using the WGS84 system"
+        },
+        "latitude" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Latitude in decimal degrees using the WGS84 system"
+        },
+        "elevation" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Elevation in meters using the WGS84 system"
+        },
+        "accuracy" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Accuracy of the position in meters"
+        },
+        "measuredDateTime" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of location measurement (ISO8601)"
+        }
+      }
+    },
+    "DeviceRegistrationAuth" : {
+      "required" : [ "id", "type" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The ID used to authenticate when this device was added"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "person", "apikey" ],
+          "description" : "The type of authentication used to add the device"
+        }
+      }
+    },
+    "DeviceRegistration" : {
+      "required" : [ "auth", "date" ],
+      "properties" : {
+        "auth" : {
+          "$ref" : "#/definitions/DeviceRegistrationAuth"
+        },
+        "date" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time that the device was added (ISO8601)"
+        }
+      }
+    },
+    "DeviceMgmt" : {
+      "required" : [ "lastActivityDateTime", "dormant", "supports" ],
+      "properties" : {
+        "lastActivityDateTime" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of last device management server activity, updated periodically (ISO8601)"
+        },
+        "dormantDateTime" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time at which the managed device will automatically be set dormant (ISO8601)"
+        },
+        "dormant" : {
+          "type" : "boolean",
+          "description" : "Whether the device has become dormant"
+        },
+        "supports" : {
+          "type" : "object",
+          "properties" : {
+            "deviceActions" : {
+              "type" : "boolean",
+              "description" : "Whether the device supports Reboot and Factory Reset actions"
+            },
+            "firmwareActions" : {
+              "type" : "boolean",
+              "description" : "Whether the device supports Firmware Download and Firmware Update actions"
+            }
+          }
+        },
+        "firmware" : {
+          "$ref" : "#/definitions/DeviceFirmware"
+        }
+      }
+    },
+    "DeviceFirmware" : {
+      "properties" : {
+        "version" : {
+          "type" : "string",
+          "description" : "The version of the firmware"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the firmware to be used on the device"
+        },
+        "url" : {
+          "type" : "string",
+          "description" : "The URL from which the firmware image can be downloaded"
+        },
+        "verifier" : {
+          "type" : "string",
+          "description" : "The verifier such as a checksum for the firmware image to validate its integrity"
+        },
+        "state" : {
+          "type" : "number",
+          "description" : "Indicates the state of the firmware image",
+          "enum" : [ "Idle", "Downloading", "Downloaded" ]
+        },
+        "updateStatus" : {
+          "type" : "number",
+          "description" : "Indicates the status of the update",
+          "enum" : [ "Success", "In progress", "Out of memory", "Connection lost", "Verification failed", "Unsupported image", "Invalid URI" ]
+        },
+        "updatedDateTime" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of initiating the last update (ISO8601)"
+        }
+      }
+    },
+    "DeviceType" : {
+      "required" : [ "id", "classId", "description", "metadata" ],
+      "properties" : {
+        "id" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Description of the device type"
+        },
+        "classId" : {
+          "type" : "string",
+          "enum" : [ "Device", "Gateway" ]
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/metadata"
+        }
+      }
+    },
+    "DeviceTypeListResponse" : {
+      "required" : [ "bookmark", "meta", "results" ],
+      "properties" : {
+        "bookmark" : {
+          "$ref" : "#/definitions/bookmark"
+        },
+        "meta" : {
+          "$ref" : "#/definitions/SearchResultMetaInformation"
+        },
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DeviceType"
+          }
+        }
+      }
+    },
+    "DeviceTypeCreationRequest" : {
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Description of the device type"
+        },
+        "classId" : {
+          "type" : "string",
+          "enum" : [ "Device", "Gateway" ]
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/metadata"
+        }
+      }
+    },
+    "DeviceTypeUpdateRequest" : {
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "description" : "Description of the device type"
+        },
+        "deviceInfo" : {
+          "$ref" : "#/definitions/DeviceInfo"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/metadata"
+        }
+      }
+    },
+    "MgmtInitiationRequest" : {
+      "type" : "object",
+      "required" : [ "action", "parameters", "devices" ],
+      "properties" : {
+        "action" : {
+          "type" : "string",
+          "enum" : [ "device/reboot", "device/factoryReset", "firmware/download", "firmware/update" ]
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "name" : {
+                "type" : "string",
+                "description" : "Name of parameter"
+              },
+              "value" : {
+                "type" : "string",
+                "description" : "Value of parameter"
+              }
+            }
+          }
+        },
+        "devices" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DeviceTarget"
+          },
+          "description" : "Array of devices where action is to be initiated, no more than 5000."
+        }
+      }
+    },
+    "MgmtRequest" : {
+      "required" : [ "requestId", "action", "complete", "devices", "initiatedDateTime" ],
+      "properties" : {
+        "requestId" : {
+          "type" : "string",
+          "description" : "Request ID"
+        },
+        "action" : {
+          "type" : "string",
+          "description" : "The device management action performed in this request"
+        },
+        "complete" : {
+          "type" : "boolean",
+          "description" : "Whether the request has completed or still in progress"
+        },
+        "devices" : {
+          "$ref" : "#/definitions/MgmtRequestDeviceCounts",
+          "description" : "Information about device counts involved in this request"
+        },
+        "initiatedDateTime" : {
+          "type" : "string",
+          "description" : "Date and time when this request has been initiated"
+        },
+        "completedDateTime" : {
+          "type" : "string",
+          "description" : "Date and time when this request has been completed"
+        }
+      }
+    },
+    "MgmtRequestDeviceCounts" : {
+      "required" : [ "total", "success", "fail" ],
+      "properties" : {
+        "total" : {
+          "type" : "integer",
+          "description" : "Total number of devices involved in the request"
+        },
+        "success" : {
+          "type" : "integer",
+          "description" : "The number of devices that completed the request successfully"
+        },
+        "fail" : {
+          "type" : "integer",
+          "description" : "The number of devices that failed the request"
+        }
+      }
+    },
+    "MgmtRequestListResponse" : {
+      "required" : [ "bookmark", "meta", "results" ],
+      "properties" : {
+        "bookmark" : {
+          "$ref" : "#/definitions/bookmark"
+        },
+        "meta" : {
+          "$ref" : "#/definitions/SearchResultMetaInformation"
+        },
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MgmtRequest"
+          }
+        }
+      }
+    },
+    "MgmtRequestAction" : {
+      "type" : "object",
+      "required" : [ "deviceId", "typeId", "status", "complete" ],
+      "properties" : {
+        "deviceId" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "typeId" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "status" : {
+          "type" : "integer",
+          "description" : "Status of this action.",
+          "enum" : [ "Success", "In progress", "Failure", "Time out" ]
+        },
+        "complete" : {
+          "type" : "boolean",
+          "description" : "Whether the action is complete"
+        }
+      }
+    },
+    "MgmtRequestActionListResponse" : {
+      "required" : [ "bookmark", "meta", "results" ],
+      "properties" : {
+        "bookmark" : {
+          "$ref" : "#/definitions/bookmark"
+        },
+        "meta" : {
+          "$ref" : "#/definitions/SearchResultMetaInformation"
+        },
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MgmtRequestAction"
+          }
+        }
+      }
+    },
+    "MgmtRequestDeviceStatus" : {
+      "type" : "object",
+      "required" : [ "status", "complete" ],
+      "properties" : {
+        "status" : {
+          "type" : "integer",
+          "description" : "Status of this action.",
+          "enum" : [ "Success", "In progress", "Failure", "Time out" ]
+        },
+        "complete" : {
+          "type" : "boolean",
+          "description" : "Whether the action is complete"
+        }
+      }
+    },
+    "Historian" : {
+      "properties" : {
+        "device_id" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "device_type" : {
+          "$ref" : "#/definitions/typeId"
+        },
+        "evt_type" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "object",
+          "$ref" : "#/definitions/HistorianTimestamp"
+        },
+        "evt" : {
+          "type" : "object"
+        }
+      }
+    },
+    "HistorianTimestamp" : {
+      "properties" : {
+        "$date" : {
+          "type" : "number"
+        }
+      }
+    },
+    "HistorianList" : {
+      "properties" : {
+        "bookmark" : {
+          "$ref" : "#/definitions/bookmark"
+        },
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Historian"
+          }
+        }
+      }
+    },
+    "usageDateProperty" : {
+      "type" : "string",
+      "format" : "date",
+      "description" : "Date in YYYY-MM-DD format"
+    },
+    "ActiveDevices" : {
+      "required" : [ "start", "end", "average" ],
+      "properties" : {
+        "start" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "end" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "average" : {
+          "type" : "integer",
+          "description" : "The average number of active devices per day over the time period"
+        },
+        "days" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ActiveDeviceDetail"
+          }
+        }
+      }
+    },
+    "ActiveDeviceDetail" : {
+      "type" : "object",
+      "required" : [ "date", "total" ],
+      "properties" : {
+        "date" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The number of active devices on this day"
+        }
+      }
+    },
+    "HistoricalData" : {
+      "required" : [ "start", "end", "average" ],
+      "properties" : {
+        "start" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "end" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "average" : {
+          "type" : "integer",
+          "description" : "The average amount of storage used per day for historical data over the time period"
+        },
+        "days" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/HistoricalDataDetail"
+          }
+        }
+      }
+    },
+    "HistoricalDataDetail" : {
+      "required" : [ "date", "total" ],
+      "properties" : {
+        "date" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The amount of data used for storing historical events (in Kb)"
+        }
+      }
+    },
+    "DataTraffic" : {
+      "required" : [ "start", "end", "average", "total" ],
+      "properties" : {
+        "start" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "end" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "average" : {
+          "type" : "integer",
+          "description" : "The average amount of data used per day over the time period"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The total amount of data used over the time period"
+        },
+        "days" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataTrafficDetail"
+          }
+        }
+      }
+    },
+    "DataTrafficDetail" : {
+      "required" : [ "date", "total" ],
+      "properties" : {
+        "date" : {
+          "$ref" : "#/definitions/usageDateProperty"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The amount of data used for storing historical events (in Kb)"
+        }
+      }
+    },
+    "LogEntry" : {
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "Log message"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of the log entry (ISO8601)"
+        }
+      }
+    },
+    "ListOfLogEntries" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/LogEntry"
+      }
+    },
+    "serviceStatus" : {
+      "type" : "string",
+      "description" : "The status of the service.",
+      "enum" : [ "green", "amber", "red" ]
+    },
+    "dataCenterStatus" : {
+      "type" : "string",
+      "description" : "The datacenter status of the organization calling the API.",
+      "properties" : {
+        "messaging" : {
+          "$ref" : "#/definitions/serviceStatus",
+          "description" : "Status of MQTT messaging"
+        },
+        "dashboard" : {
+          "$ref" : "#/definitions/serviceStatus",
+          "description" : "Status of the web user interface"
+        },
+        "historian" : {
+          "$ref" : "#/definitions/serviceStatus",
+          "description" : "Status of the Historian feature"
+        }
+      }
+    },
+    "EventPayload" : {
+      "type" : "string",
+      "description" : "Free-form data"
+    }
+  }
+}

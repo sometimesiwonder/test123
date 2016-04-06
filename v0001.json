@@ -1,0 +1,1445 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "IBM IOT Foundation API",
+    "description" : "<p>API for the IBM Internet of Things Foundation</p>\n<p>This version of the Internet of Things Foundation API is still supported, \nhowever it should now be considered a deprecated API, many new features are available\nin the version 2 API that are not present here.</p>\n<p>After registering for your own organization you will be provided with a 6 character\norganization ID.  This ID is required in the hostname for any API calls, the base \nURL for your organization can be accessed at the following address: \nhttps://<b>orgId</b>.internetofthings.ibmcloud.com/api/v0002/</p>\n<p>The API is protected with HTTP Basic auth.  When you generate an API key \nyou will be presented with a key and an authentication token.\nTo authenticate all requests to the API set the username to the API \nkey, and the password to the authentication token.</p>\n",
+    "version" : "0001",
+    "contact" : {
+      "name" : "IBM IOT Foundation Team",
+      "url" : "https://internetofthings.ibmcloud.com",
+      "email" : "iotf@uk.ibm.com"
+    }
+  },
+  "schemes" : [ "https" ],
+  "basePath" : "/api/v0001",
+  "produces" : [ "application/json" ],
+  "responses" : {
+    "UnexpectedError" : {
+      "description" : "Unexpected error",
+      "schema" : {
+        "$ref" : "#/definitions/ErrorMessage"
+      },
+      "examples" : {
+        "application/json" : {
+          "message" : "CUDRS0001E: An internal server error occurred while processing your request.",
+          "exception" : [ {
+            "id" : "CUDRS0001E"
+          }, {
+            "properties" : [ ]
+          } ]
+        }
+      }
+    },
+    "RangeNotSatisfiable" : {
+      "description" : "Returned in response to a request that failed because the supplied Range header denotes a range that does not intersect with available items in the collection. Note: 416 will never be returned in response to requests that lack the 'Range' header.",
+      "schema" : {
+        "$ref" : "#/definitions/ErrorMessage"
+      },
+      "examples" : {
+        "application/json" : {
+          "message" : "CUDSE1302E: The requested  range {0}-{1} is not satisfiable",
+          "exception" : [ {
+            "id" : "CUDSE1302E"
+          }, {
+            "properties" : [ "22", "24" ]
+          } ]
+        }
+      },
+      "headers" : {
+        "Content-Range" : {
+          "type" : "string",
+          "description" : "Total items available in collection",
+          "format" : "items */{total-items} where {total-items} is a number or '*' if total could not be calculated."
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "ApiKey" : {
+      "type" : "basic",
+      "description" : "Requires a valid API key and authentication token"
+    }
+  },
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Organization Management" ],
+        "summary" : "Get organization details",
+        "description" : "Retrieve details about an organization.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Organization details",
+            "schema" : {
+              "$ref" : "#/definitions/Organization"
+            },
+            "examples" : {
+              "application/json" : {
+                "id" : "ab8de4",
+                "name" : "My organization",
+                "enabled" : true,
+                "type" : "Bluemix Free",
+                "bluemixRegion" : "us-south",
+                "bluemixOrganizationGuid" : "025273cb-d3c5-4204-9fef-ad5f84c2af02",
+                "bluemixServiceInstanceGuid" : "90d13f02-152c-4cd7-b23e-aaae87b2f338",
+                "bluemixSpaceGuid" : "6d0535f9-9f15-48f3-8b67-43f59a3a5c65",
+                "bluemixPlanId" : "iotf-service-bronze-id",
+                "config" : {
+                  "historian" : {
+                    "enabled" : false
+                  }
+                },
+                "created" : "2015-04-08T11:23:23+00:00",
+                "updated" : "2015-04-08T11:23:23+00:00"
+              }
+            }
+          },
+          "404" : {
+            "description" : "The organization does not exist"
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the api key used does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/devices" : {
+      "get" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "List all devices",
+        "description" : "List all devices. Supports pagination.",
+        "operationId" : "devicesPaged",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/RangeHeader"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device page. Returned in response to a request lacking the 'Range' header where the response includes all available devices.",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceList"
+            },
+            "headers" : {
+              "Content-Range" : {
+                "type" : "string",
+                "description" : "Range of returned items and total items available in collection",
+                "format" : "items {start}-{end}/{total-items} where {total-items} is a number or '*' if total could not be calculated. {end} will be capped to index of last available item."
+              }
+            }
+          },
+          "206" : {
+            "description" : "Device Page. Returned in response to requests that include the 'Range' header. Also returned in response to requests that lack the 'Range' header but do not include all available devices.",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceList"
+            },
+            "headers" : {
+              "Content-Range" : {
+                "type" : "string",
+                "description" : "Range of returned items and total items available in collection",
+                "format" : "items {start}-{end}/{total-items} where {total-items} is a number or '*' if total could not be calculated. {end} will be capped to index of last available item."
+              }
+            }
+          },
+          "416" : {
+            "$ref" : "#/responses/RangeNotSatisfiable"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "Register new device",
+        "description" : "Register a new device.  The response body will contain the generated authentication token for this device. You must make sure to record this token when processing the response. The data is stored hashed and salted so we are not able to retrieve lost authentication tokens.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Device",
+          "in" : "body",
+          "description" : "Device to be registered",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceRegistrationRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Device registered successfully",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceWithPassword"
+            },
+            "headers" : {
+              "Location" : {
+                "type" : "string",
+                "description" : "Location (resource URI) for the registered device"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request (No body, invalid JSON, unexpected key, bad value)",
+            "schema" : {
+              "$ref" : "#/definitions/InvalidRequestMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0007E: The request was not valid. Review the constraint violations provided.",
+                "exception" : {
+                  "id" : "CUDRS0007E",
+                  "properties" : [ ]
+                },
+                "violations" : [ {
+                  "message" : "CUDRS0009E: The id field is missing. A value must be specified.",
+                  "exception" : {
+                    "id" : "CUDRS0009E",
+                    "properties" : [ "id" ]
+                  }
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Maximum number of devices exceeded",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0018E: The device could not be added to the organization ab8de4 as the maximum number of devices has been reached.",
+                "exception" : [ {
+                  "id" : "CUDRS0018E"
+                }, {
+                  "properties" : [ "ab8de4" ]
+                } ]
+              }
+            }
+          },
+          "409" : {
+            "description" : "The device with the type id and device id specified already exists",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0020E: The organization ab8de4 already has a device of type a99 and id 001.",
+                "exception" : [ {
+                  "id" : "CUDRS0018E"
+                }, {
+                  "properties" : [ "ab8de4", "a99", "001" ]
+                } ]
+              }
+            }
+          },
+          "413" : {
+            "description" : "Request size limit exeeded",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDRS0021E: The request could not be processed as the content was too large.",
+                "exception" : [ {
+                  "id" : "CUDRS0021E"
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/devices/{deviceType}" : {
+      "parameters" : [ {
+        "$ref" : "#/parameters/DeviceTypeParam"
+      } ],
+      "get" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "Get a list of all devices of a specific type",
+        "description" : "Get a list of all devices of a specific type. Supports pagination.",
+        "operationId" : "devicesByTypePaged",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/RangeHeader"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device page. Returned in response to a request lacking the 'Range' header where the response includes all available devices of this type.",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceList"
+            },
+            "headers" : {
+              "Content-Range" : {
+                "type" : "string",
+                "description" : "Range of returned items and total items available in collection",
+                "format" : "items {start}-{end}/{total-items} where {total-items} is a number or '*' if total could not be calculated. {end} will be capped to index of last available item."
+              }
+            }
+          },
+          "206" : {
+            "description" : "Device Page. Returned in response to requests that include the 'Range' header. Also returned in response to requests that lack the 'Range' header but do not include all available devices of this type.",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceList"
+            },
+            "headers" : {
+              "Content-Range" : {
+                "type" : "string",
+                "description" : "Range of returned items and total items available in collection",
+                "format" : "items {start}-{end}/{total-items} where {total-items} is a number or '*' if total could not be calculated. {end} will be capped to index of last available item."
+              }
+            }
+          },
+          "404" : {
+            "description" : "The device type has an invalid format"
+          },
+          "416" : {
+            "$ref" : "#/responses/RangeNotSatisfiable"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/devices/{deviceType}/{deviceId}" : {
+      "get" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "Get summary information about a registered device",
+        "description" : "Get summary information about a registered device",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/DeviceTypeParam"
+        }, {
+          "$ref" : "#/parameters/DeviceIdParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device details were successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/Device"
+            }
+          },
+          "404" : {
+            "description" : "The device does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "Update an existing device",
+        "description" : "Update an existing device",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/DeviceTypeParam"
+        }, {
+          "$ref" : "#/parameters/DeviceIdParam"
+        }, {
+          "name" : "Device",
+          "in" : "body",
+          "description" : "Device properties to be registered",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeviceUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Device was successfully updated",
+            "schema" : {
+              "$ref" : "#/definitions/Device"
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "Delete a registered device",
+        "description" : "Delete a registered device",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/DeviceTypeParam"
+        }, {
+          "$ref" : "#/parameters/DeviceIdParam"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Device was successfully unregistered"
+          },
+          "404" : {
+            "description" : "The device does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/device-types/" : {
+      "get" : {
+        "tags" : [ "Device Registry Management" ],
+        "summary" : "Get a list of all devices types",
+        "description" : "Get a list of all devices types",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device types",
+            "schema" : {
+              "$ref" : "#/definitions/DeviceTypeList"
+            }
+          }
+        }
+      }
+    },
+    "/logs/connection" : {
+      "parameters" : [ {
+        "name" : "type",
+        "in" : "query",
+        "required" : true,
+        "description" : "Device type",
+        "type" : "string"
+      }, {
+        "name" : "id",
+        "in" : "query",
+        "required" : true,
+        "description" : "Device ID",
+        "type" : "string"
+      } ],
+      "get" : {
+        "tags" : [ "Problem Determination" ],
+        "summary" : "List device connection log events",
+        "description" : "List connection log events for a device to aid in diagnosing connectivity problems. The entries record successful connection, unsuccessful connection attempts, intentional disconnection and server-initiated disconnection.",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Connection logs were successfully retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/ListOfLogEntries"
+            }
+          },
+          "401" : {
+            "description" : "The authentication token is empty or invalid"
+          },
+          "403" : {
+            "description" : "The authentication method is invalid or the API key used does not exist"
+          },
+          "404" : {
+            "description" : "The organization, device type or device does not exist"
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/historian/" : {
+      "get" : {
+        "tags" : [ "Historical Event Retrieval" ],
+        "summary" : "View events across all devices registered to the organization",
+        "description" : "View events across all devices registered to the organization",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/historianCursorIdParam"
+        }, {
+          "$ref" : "#/parameters/historianCookieParam"
+        }, {
+          "$ref" : "#/parameters/historianEvtTypeParam"
+        }, {
+          "$ref" : "#/parameters/historianStartParam"
+        }, {
+          "$ref" : "#/parameters/historianEndParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device events",
+            "headers" : {
+              "cursorid" : {
+                "type" : "string",
+                "description" : "Use the cursorId response header returned by the initial request to iterate through the list of historical records"
+              },
+              "Set-Cookie" : {
+                "type" : "string",
+                "description" : "iotHistorianSessionId"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Historian1List"
+            }
+          }
+        }
+      }
+    },
+    "/historian/{deviceType}" : {
+      "get" : {
+        "tags" : [ "Historical Event Retrieval" ],
+        "summary" : "View events across all devices of a specific type",
+        "description" : "View events across all devices of a specific type",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "deviceType",
+          "in" : "path",
+          "type" : "string",
+          "required" : true,
+          "description" : "Device type"
+        }, {
+          "$ref" : "#/parameters/historianCursorIdParam"
+        }, {
+          "$ref" : "#/parameters/historianCookieParam"
+        }, {
+          "$ref" : "#/parameters/historianEvtTypeParam"
+        }, {
+          "$ref" : "#/parameters/historianStartParam"
+        }, {
+          "$ref" : "#/parameters/historianEndParam"
+        }, {
+          "$ref" : "#/parameters/historianTopParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeTypeParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device events",
+            "headers" : {
+              "cursorid" : {
+                "type" : "string",
+                "description" : "Use the cursorId response header returned by the initial request to iterate through the list of historical records"
+              },
+              "Set-Cookie" : {
+                "type" : "string",
+                "description" : "iotHistorianSessionId"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Historian2List"
+            }
+          }
+        }
+      }
+    },
+    "/historian/{deviceType}/{deviceId}" : {
+      "get" : {
+        "tags" : [ "Historical Event Retrieval" ],
+        "summary" : "View events for a specific device",
+        "description" : "View events for a specific device",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "deviceType",
+          "in" : "path",
+          "type" : "string",
+          "required" : true,
+          "description" : "Device type"
+        }, {
+          "name" : "deviceId",
+          "in" : "path",
+          "type" : "string",
+          "required" : true,
+          "description" : "Device id"
+        }, {
+          "$ref" : "#/parameters/historianCursorIdParam"
+        }, {
+          "$ref" : "#/parameters/historianCookieParam"
+        }, {
+          "$ref" : "#/parameters/historianEvtTypeParam"
+        }, {
+          "$ref" : "#/parameters/historianStartParam"
+        }, {
+          "$ref" : "#/parameters/historianEndParam"
+        }, {
+          "$ref" : "#/parameters/historianTopParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeParam"
+        }, {
+          "$ref" : "#/parameters/historianSummarizeTypeParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of device events",
+            "headers" : {
+              "cursorid" : {
+                "type" : "string",
+                "description" : "Use the cursorId response header returned by the initial request to iterate through the list of historical records"
+              },
+              "Set-Cookie" : {
+                "type" : "string",
+                "description" : "iotHistorianSessionId"
+              }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Historian3List"
+            }
+          }
+        }
+      }
+    },
+    "/usage/active-devices" : {
+      "get" : {
+        "tags" : [ "Usage Management" ],
+        "summary" : "Retrieve the number of active devices over a period of time",
+        "description" : "Retrieve the number of active devices over a period of time",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "Start date in one of the following formats: YYYY (first day of the year), YYYY-MM (first day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "End date in one of the following formats: YYYY (last day of the year), YYYY-MM (last day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "detail",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Indicates whether a daily breakdown will be included in the resultset"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Result set",
+            "schema" : {
+              "$ref" : "#/definitions/ActiveDevices"
+            },
+            "examples" : {
+              "application/json" : {
+                "start" : "2015-04-01",
+                "end" : "2015-04-04",
+                "average" : 31.25,
+                "days" : [ {
+                  "date" : "2015-04-01",
+                  "total" : 20
+                }, {
+                  "date" : "2015-04-02",
+                  "total" : 30
+                }, {
+                  "date" : "2015-04-03",
+                  "total" : 50
+                }, {
+                  "date" : "2015-04-04",
+                  "total" : 25
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDUS0002E: Parameter missing.",
+                "exception" : [ {
+                  "id" : "CUDUS0002E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/usage/historical-data" : {
+      "get" : {
+        "tags" : [ "Usage Management" ],
+        "summary" : "Retrieve the amount of storage being used by historical event data",
+        "description" : "Retrieve the amount of storage being used by historical event data",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "Start date in one of the following formats: YYYY (first day of the year), YYYY-MM (first day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "End date in one of the following formats: YYYY (last day of the year), YYYY-MM (last day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "detail",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Indicates whether a daily breakdown will be included in the resultset"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Result set",
+            "schema" : {
+              "$ref" : "#/definitions/HistoricalData"
+            },
+            "examples" : {
+              "application/json" : {
+                "start" : "2015-04-01",
+                "end" : "2015-04-04",
+                "average" : 5259340.0,
+                "days" : [ {
+                  "date" : "2015-04-01",
+                  "total" : 5231952
+                }, {
+                  "date" : "2015-04-02",
+                  "total" : 5250208
+                }, {
+                  "date" : "2015-04-03",
+                  "total" : 5268464
+                }, {
+                  "date" : "2015-04-04",
+                  "total" : 5286736
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDUS0002E: Parameter missing.",
+                "exception" : [ {
+                  "id" : "CUDUS0002E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/usage/data-traffic" : {
+      "get" : {
+        "tags" : [ "Usage Management" ],
+        "summary" : "Retrieve the amount of data used",
+        "description" : "Retrieve the amount of data used",
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "Start date in one of the following formats: YYYY (first day of the year), YYYY-MM (first day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "End date in one of the following formats: YYYY (last day of the year), YYYY-MM (last day of the month), YYYY-MM-DD (specific day)"
+        }, {
+          "name" : "detail",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Indicates whether a daily breakdown will be included in the resultset"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Result set",
+            "schema" : {
+              "$ref" : "#/definitions/DataTraffic"
+            },
+            "examples" : {
+              "application/json" : {
+                "start" : "2015-04-01",
+                "end" : "2015-04-04",
+                "total" : 77953368,
+                "average" : 19488342,
+                "days" : [ {
+                  "date" : "2015-04-01",
+                  "total" : 19447737
+                }, {
+                  "date" : "2015-04-02",
+                  "total" : 19607362
+                }, {
+                  "date" : "2015-04-03",
+                  "total" : 19451507
+                }, {
+                  "date" : "2015-04-04",
+                  "total" : 19446762
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorMessage"
+            },
+            "examples" : {
+              "application/json" : {
+                "message" : "CUDUS0002E: Parameter missing.",
+                "exception" : [ {
+                  "id" : "CUDUS0002E"
+                }, {
+                  "properties" : [ ]
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/responses/UnexpectedError"
+          }
+        }
+      }
+    }
+  },
+  "parameters" : {
+    "RangeHeader" : {
+      "name" : "Range",
+      "in" : "header",
+      "description" : "Restrict items returned by inclusive, zero-based start and end indices. (e.g. items=0-3 refers to the first four results). Ranges cannot exceed 1,000 in size. If not supplied, the first 1,000 results will be returned (i.e. Range: items=0-999).",
+      "required" : false,
+      "type" : "string"
+    },
+    "DeviceTypeParam" : {
+      "name" : "deviceType",
+      "in" : "path",
+      "required" : true,
+      "type" : "string",
+      "description" : "Device Type"
+    },
+    "DeviceIdParam" : {
+      "name" : "deviceId",
+      "in" : "path",
+      "required" : true,
+      "type" : "string",
+      "description" : "Device ID"
+    },
+    "historianEvtTypeParam" : {
+      "name" : "evt_type",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Restrict results only to those events published under this event identifier"
+    },
+    "historianStartParam" : {
+      "name" : "start",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Number of milliseconds since January 1, 1970, 00:00:00 GMT).  Restrict results to events published after this date"
+    },
+    "historianEndParam" : {
+      "name" : "end",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Number of milliseconds since January 1, 1970, 00:00:00 GMT). Restrict results to events published before this date"
+    },
+    "historianTopParam" : {
+      "name" : "top",
+      "in" : "query",
+      "type" : "integer",
+      "description" : "Number between 1 and 100. Restrict the number of records returned (default=100)"
+    },
+    "historianSummarizeParam" : {
+      "name" : "summarize",
+      "in" : "query",
+      "type" : "string",
+      "description" : "Array.  A list of fields from the JSON event payload on which to perform the aggregate function specified by the summarize_type parameter. The format for the parameter is {field1,field2,...,fieldN}"
+    },
+    "historianSummarizeTypeParam" : {
+      "name" : "summarize_type",
+      "in" : "query",
+      "type" : "string",
+      "enum" : [ "avg", "count", "min", "max", "sum", "range", "stdev", "variance" ],
+      "description" : "The aggregation to perform on the fields specified by the summarize parameter"
+    },
+    "historianCursorIdParam" : {
+      "name" : "cursorId",
+      "in" : "header",
+      "type" : "string",
+      "description" : "Use the cursorId response header returned by the initial request to iterate through the list of historical records"
+    },
+    "historianCookieParam" : {
+      "name" : "Cookie",
+      "in" : "header",
+      "type" : "string",
+      "description" : "Required when setting the cursorId header. Use the iotHistorianSessionId cookie returned by the initial request"
+    }
+  },
+  "definitions" : {
+    "deviceType" : {
+      "type" : "string",
+      "description" : "Device Type"
+    },
+    "deviceId" : {
+      "type" : "string",
+      "description" : "Device ID"
+    },
+    "InvalidRequestMessage" : {
+      "required" : [ "message", "exception", "violations" ],
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "English language error message"
+        },
+        "exception" : {
+          "$ref" : "#/definitions/ErrorMessageException"
+        },
+        "violations" : {
+          "type" : "array",
+          "description" : "List of constraint violations for the invalid request",
+          "items" : {
+            "$ref" : "#/definitions/ErrorMessage"
+          }
+        }
+      }
+    },
+    "ErrorMessage" : {
+      "required" : [ "message", "exception" ],
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "English language error message"
+        },
+        "exception" : {
+          "$ref" : "#/definitions/ErrorMessageException"
+        }
+      }
+    },
+    "ErrorMessageException" : {
+      "required" : [ "id", "properties" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Unique message ID of the exception encountered"
+        },
+        "properties" : {
+          "type" : "array",
+          "description" : "List of arguments for this specific instance of the exception",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "Organization" : {
+      "required" : [ "id", "name", "enabled", "type", "config", "created", "updated" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Organization ID"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "User assigned name for the organization"
+        },
+        "enabled" : {
+          "type" : "boolean",
+          "description" : "Whether the organization is enabled.  If the organization is disabled all API calls will be rejected and messaging will be disabled across all devices and applications"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "Bluemix Free", "Bluemix Bronze", "Bluemix Silver", "Bluemix Gold", "Pending", "Trial", "Bronze", "Silver", "Gold", "Subscription" ]
+        },
+        "bluemixOrganizationGuid" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "The GUID of the associated organization in Bluemix.  Only returned for Bluemix organizations."
+        },
+        "bluemixServiceInstanceGuid" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "The GUID of the service instance in Bluemix.  Only returned for Bluemix organizations."
+        },
+        "bluemixPlanId" : {
+          "type" : "string",
+          "description" : "The ID of the pricing plan selected for this organization.  Only returned for Bluemix organizations."
+        },
+        "bluemixSpaceGuid" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "The GUID of the associated space in Bluemix.  Only returned for Bluemix organizations."
+        },
+        "bluemixRegion" : {
+          "type" : "string",
+          "description" : "The name of the Bluemix region this organization was provisioned in.  Only returned for Bluemix organizations."
+        },
+        "customerAccountId" : {
+          "type" : "number",
+          "description" : "The ID of the owning customer account in IBM Marketplace.  Only returned for IBM Marketplace organizations."
+        },
+        "masterSubscriptionId" : {
+          "type" : "string",
+          "description" : "The ID of the subscription in IBM Marketplace associated with this organization.  Only returned for IBM Marketplace organizations."
+        },
+        "config" : {
+          "$ref" : "#/definitions/OrganizationConfig"
+        },
+        "created" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "ISO8601 date-time that the organization was created"
+        },
+        "updated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "ISO8601 date-time that the organization was last updated"
+        }
+      },
+      "example" : {
+        "id" : "ab8de4",
+        "name" : "My organization",
+        "enabled" : true,
+        "type" : "Bluemix Free",
+        "bluemixRegion" : "us-south",
+        "bluemixOrganizationGuid" : "025273cb-d3c5-4204-9fef-ad5f84c2af02",
+        "bluemixSpaceGuid" : "6d0535f9-9f15-48f3-8b67-43f59a3a5c65",
+        "bluemixServiceInstanceGuid" : "90d13f02-152c-4cd7-b23e-aaae87b2f338",
+        "bluemixPlanId" : "iotf-service-bronze-id",
+        "config" : {
+          "historian" : {
+            "enabled" : false
+          }
+        },
+        "created" : "2015-04-08T11:23:23+00:00",
+        "updated" : "2015-04-08T11:23:23+00:00"
+      }
+    },
+    "OrganizationConfig" : {
+      "required" : [ "historian" ],
+      "properties" : {
+        "historian" : {
+          "$ref" : "#/definitions/HistorianConfig"
+        }
+      }
+    },
+    "HistorianConfig" : {
+      "required" : [ "enabled" ],
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "description" : "Enable or disable historian"
+        },
+        "retention" : {
+          "type" : "number",
+          "description" : "Number of months to retain data for; 0 means retain forever"
+        }
+      }
+    },
+    "Device" : {
+      "required" : [ "uuid", "id", "type", "metadata", "registration", "status" ],
+      "properties" : {
+        "uuid" : {
+          "type" : "string",
+          "description" : "Globaly unique identifier for this device"
+        },
+        "type" : {
+          "$ref" : "#/definitions/deviceType"
+        },
+        "id" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Free-form metadata"
+        },
+        "registration" : {
+          "$ref" : "#/definitions/DeviceRegistration"
+        },
+        "status" : {
+          "$ref" : "#/definitions/DeviceStatus"
+        }
+      }
+    },
+    "DeviceList" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/Device"
+      }
+    },
+    "DeviceRegistrationAuth" : {
+      "required" : [ "id", "type" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The ID used to authenticate when this device was registered"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "person", "apikey" ],
+          "description" : "The type of authentication used to register the device"
+        }
+      }
+    },
+    "DeviceRegistration" : {
+      "required" : [ "auth", "date" ],
+      "properties" : {
+        "auth" : {
+          "$ref" : "#/definitions/DeviceRegistrationAuth"
+        },
+        "date" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date of registration (ISO8601)"
+        }
+      }
+    },
+    "DeviceStatus" : {
+      "required" : [ "mqtt" ],
+      "properties" : {
+        "mqtt" : {
+          "$ref" : "#/definitions/DeviceStatusMqtt"
+        }
+      }
+    },
+    "DeviceStatusMqtt" : {
+      "required" : [ "clientAddress", "protocol", "action", "timestamp", "port" ],
+      "properties" : {
+        "clientAddress" : {
+          "type" : "string"
+        },
+        "port" : {
+          "type" : "number"
+        },
+        "protocol" : {
+          "type" : "string"
+        },
+        "action" : {
+          "type" : "string",
+          "description" : "'Connect', 'Disconnect' or 'Unknown'"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Timestamp recording when status was last updated (ISO8601)"
+        }
+      }
+    },
+    "DeviceWithPassword" : {
+      "type" : "object",
+      "required" : [ "type", "id", "metadata", "registration", "status", "password" ],
+      "properties" : {
+        "uuid" : {
+          "type" : "string",
+          "description" : "Globally unique identifier for this device"
+        },
+        "type" : {
+          "$ref" : "#/definitions/deviceType"
+        },
+        "id" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Free-form metadata"
+        },
+        "registration" : {
+          "$ref" : "#/definitions/DeviceRegistration"
+        },
+        "status" : {
+          "$ref" : "#/definitions/DeviceStatus"
+        },
+        "password" : {
+          "type" : "string"
+        }
+      }
+    },
+    "DeviceRegistrationRequest" : {
+      "required" : [ "id", "type" ],
+      "properties" : {
+        "type" : {
+          "$ref" : "#/definitions/deviceType"
+        },
+        "id" : {
+          "$ref" : "#/definitions/deviceId"
+        },
+        "metadata" : {
+          "type" : "object",
+          "description" : "Metadata of the device"
+        },
+        "password" : {
+          "type" : "string",
+          "description" : "Authentication token, will be generated if not supplied"
+        }
+      }
+    },
+    "DeviceUpdateRequest" : {
+      "properties" : {
+        "metadata" : {
+          "type" : "object",
+          "description" : "Metadata of the device"
+        }
+      }
+    },
+    "DeviceType" : {
+      "required" : [ "deviceType", "count" ],
+      "properties" : {
+        "deviceType" : {
+          "type" : "string",
+          "description" : "Name of the device type"
+        },
+        "count" : {
+          "type" : "integer",
+          "description" : "Total number of registered devices of this type"
+        }
+      }
+    },
+    "DeviceTypeList" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DeviceType"
+      }
+    },
+    "Historian1" : {
+      "properties" : {
+        "device_id" : {
+          "type" : "string"
+        },
+        "device_type" : {
+          "type" : "string"
+        },
+        "evt_type" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "string"
+        },
+        "evt" : {
+          "type" : "object"
+        }
+      }
+    },
+    "Historian1List" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/Historian1"
+      }
+    },
+    "Historian2" : {
+      "properties" : {
+        "device_id" : {
+          "type" : "string"
+        },
+        "evt_type" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "string"
+        },
+        "evt" : {
+          "type" : "object"
+        }
+      }
+    },
+    "Historian2List" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/Historian2"
+      }
+    },
+    "Historian3" : {
+      "properties" : {
+        "evt_type" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "string"
+        },
+        "evt" : {
+          "type" : "object"
+        }
+      }
+    },
+    "Historian3List" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/Historian3"
+      }
+    },
+    "ActiveDevices" : {
+      "required" : [ "start", "end", "average" ],
+      "properties" : {
+        "start" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "end" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "average" : {
+          "type" : "integer",
+          "description" : "The average number of active devices per day over the time period"
+        },
+        "days" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ActiveDeviceCountDetail"
+          }
+        }
+      }
+    },
+    "ActiveDeviceCountDetail" : {
+      "required" : [ "date", "total" ],
+      "properties" : {
+        "date" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The number of active devices on this day"
+        }
+      }
+    },
+    "HistoricalData" : {
+      "required" : [ "start", "end", "average" ],
+      "properties" : {
+        "start" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "end" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "average" : {
+          "type" : "integer",
+          "description" : "The average amount of storage used per day for historical data over the time period"
+        },
+        "days" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/HistoricalDataDetail"
+          }
+        }
+      }
+    },
+    "HistoricalDataDetail" : {
+      "required" : [ "date", "total" ],
+      "properties" : {
+        "date" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The amount of data used for storing historical events (in Kb)"
+        }
+      }
+    },
+    "DataTraffic" : {
+      "required" : [ "start", "end", "average", "total" ],
+      "properties" : {
+        "start" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "end" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "average" : {
+          "type" : "integer",
+          "description" : "The average amount of data used per day over the time period"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The total amount of data used over the time period"
+        },
+        "days" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataTrafficDetail"
+          }
+        }
+      }
+    },
+    "DataTrafficDetail" : {
+      "required" : [ "date", "total" ],
+      "properties" : {
+        "date" : {
+          "type" : "string",
+          "format" : "date",
+          "description" : "Date in YYYY-MM-DD format"
+        },
+        "total" : {
+          "type" : "integer",
+          "description" : "The amount of data used for storing historical events (in Kb)"
+        }
+      }
+    },
+    "LogEntry" : {
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "description" : "Log message"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date and time of the log entry (ISO8601)"
+        }
+      }
+    },
+    "ListOfLogEntries" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/LogEntry"
+      }
+    }
+  }
+}
